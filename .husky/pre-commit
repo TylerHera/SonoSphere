@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "Running pre-commit hook"
+
+# Run ESLint
+npm run lint
+if [ $? -ne 0 ]; then
+  echo "ESLint found issues. Aborting commit."
+  exit 1
+fi
+
+# Run Prettier (format staged files)
+# npx prettier --write --ignore-unknown $(git diff --cached --name-only --diff-filter=ACMR | sed 's| |\ |g')
+# Simpler: format all known files as per .prettierrc for now
+npx prettier --write . 
+if [ $? -ne 0 ]; then
+  echo "Prettier found issues. Aborting commit."
+  exit 1
+fi
+
+echo "Pre-commit hook passed"
+exit 0 

@@ -1,0 +1,66 @@
+// backend/prisma/schema.prisma
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // This will be the Supabase connection string for the backend
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Corresponds to Supabase auth.users table (managed by Supabase)
+// We don't define it here for migrations if Supabase handles auth.users
+// Instead, we define a Profile table that links to it.
+
+model Profile {
+  id         String   @id @db.Uuid // Matches auth.users.id
+  username   String?  @unique
+  avatar_url String?
+  updated_at DateTime @default(now()) @db.Timestamptz
+  user       User     @relation(fields: [id], references: [id], onDelete: Cascade)
+
+  vinylItems VinylItem[] // Relation to VinylItem table
+
+  @@map("profiles") // Explicitly map to the public.profiles table
+}
+
+// This User model is a conceptual link to auth.users for Prisma relations.
+// It might not be directly migrated by Prisma if auth.users is fully managed by Supabase.
+// For a backend using Supabase, you might query auth.users directly or use Supabase client.
+// If Prisma is to manage a separate users table that mirrors/extends auth.users, this would be different.
+// Given Supabase is the auth master, this is more of a relational placeholder.
+model User {
+  id      String    @id @db.Uuid // Primary key from auth.users
+  email   String?   @unique // from auth.users
+  // Add other fields from auth.users if you need to reference them and they are stable
+  profile Profile? // Relation to Profile table
+
+  @@map("users") // Map to auth.users table in the auth schema
+  @@schema("auth")
+}
+
+model VinylItem {
+  id              BigInt    @id @default(autoincrement())
+  userId          String    @db.Uuid // Foreign key to auth.users.id
+  user            Profile   @relation(fields: [userId], references: [id])
+  discogs_id      Int?      @unique
+  title           String
+  artist_main     String
+  artists_extra   Json?     @db.JsonB
+  release_title   String?
+  year            Int?
+  formats         Json?     @db.JsonB // e.g., [{ name: "Vinyl", qty: "1", descriptions: ["LP", "Album"] }]
+  labels          Json?     @db.JsonB // e.g., [{ name: "Blue Note", catno: "BLP 1577" }]
+  genres          String[]
+  styles          String[]
+  cover_url_small String?
+  cover_url_large String?
+  status          String    @default("owned") // e.g., 'owned', 'wishlist'
+  added_at        DateTime  @default(now()) @db.Timestamptz
+  updated_at      DateTime  @default(now()) @updatedAt @db.Timestamptz
+  notes           String?
+  custom_tags     String[]
+
+  @@map("vinyl_items")
+} 

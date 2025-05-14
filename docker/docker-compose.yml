@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../:/app # Mount the project directory
+      - /app/node_modules # Don't mount node_modules from host
+      - /app/.next # Don't mount .next from host
+    environment:
+      - NODE_ENV=development
+      # Add any other environment variables needed for development
+      # e.g., DATABASE_URL, API_KEYS if not using .env.local or if preferred here
+    # command: npm run dev # Already in Dockerfile.dev CMD 
