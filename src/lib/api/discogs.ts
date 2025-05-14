@@ -21,6 +21,7 @@ export interface DiscogsRelease {
   tracklist?: { position: string; title: string; duration: string }[];
   notes?: string;
   labels?: { name: string; catno?: string }[];
+  formats?: { name: string; qty: string; descriptions?: string[]; text?: string }[];
   // Add more fields as needed based on Discogs API response
 }
 
