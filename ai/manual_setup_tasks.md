@@ -42,10 +42,10 @@
 7.  **Add shadcn/ui Components for Auth Pages:**
     *   **Instruction:** Open your terminal at the root of the project and run the following commands to add the necessary UI components for the login and signup pages:
         ```bash
-        npx shadcn-ui@latest add button
-        npx shadcn-ui@latest add card
-        npx shadcn-ui@latest add input
-        npx shadcn-ui@latest add label
+        npx shadcn@latest add button
+        npx shadcn@latest add card
+        npx shadcn@latest add input
+        npx shadcn@latest add label
         ```
     *   **Reason:** These commands will add the respective component files to your `src/components/ui` directory, which are used by the login and signup pages. Ensure you have run `npm install` (or equivalent) and initialized shadcn/ui (as covered in previous setup steps) before running these.
 
@@ -73,14 +73,14 @@
 10. **Add shadcn/ui Pagination Component:**
     *   **Instruction:** Open your terminal at the root of the project and run the following command:
         ```bash
-        npx shadcn-ui@latest add pagination
+        npx shadcn@latest add pagination
         ```
     *   **Reason:** The collection search page uses the `Pagination` component from shadcn/ui to navigate through search results. This command adds the necessary component files to `src/components/ui`.
 
 11. **Add shadcn/ui Badge Component:**
     *   **Instruction:** Open your terminal at the root of the project and run the following command:
         ```bash
-        npx shadcn-ui@latest add badge
+        npx shadcn@latest add badge
         ```
     *   **Reason:** The release detail page uses the `Badge` component from shadcn/ui to display genres and styles. This command adds the necessary component files to `src/components/ui`.
 
