@@ -129,7 +129,6 @@ export default async function CollectionPage({ searchParams }: CollectionPagePro
       <CollectionSearchForm />
       {query ? (
         <Suspense fallback={<p className="text-center">Loading search results...</p>}>
-          {/* @ts-expect-error Server Component */} 
           <SearchResults query={query} currentPage={currentPage} />
         </Suspense>
       ) : (
