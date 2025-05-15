@@ -129,6 +129,7 @@ export declare namespace MusicBrainz {
     'artist-credit'?: ArtistCredit[];
     releases?: Release[]; // If `inc=releases`
     score?: number; // Search result score
+    coverArtUrl?: string; // Optional: Added dynamically after fetching cover art
   }
 
   interface Recording {

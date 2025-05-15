@@ -51,9 +51,9 @@ const CountdownBadge = ({ releaseDate }: { releaseDate: string }) => {
 
 export function ReleaseEventCard({ release }: ReleaseEventCardProps) {
   const artistName =
-    release.artistCredit?.[0]?.artist?.name || 'Various Artists';
-  const releaseDateFormatted = release.firstReleaseDate
-    ? format(parseISO(release.firstReleaseDate), 'MMMM d, yyyy')
+    release['artist-credit']?.[0]?.artist?.name || 'Various Artists';
+  const releaseDateFormatted = release['first-release-date']
+    ? format(parseISO(release['first-release-date']), 'MMMM d, yyyy')
     : 'Date N/A';
 
   return (
@@ -100,12 +100,12 @@ export function ReleaseEventCard({ release }: ReleaseEventCardProps) {
       </CardHeader>
       <CardContent className="p-4 pt-0 flex-grow">
         <p className="text-sm text-muted-foreground">
-          {release.primaryType || 'Release'}
+          {release['primary-type'] || 'Release'}
         </p>
       </CardContent>
       <CardFooter className="p-4 pt-0 flex justify-between items-center">
-        {release.firstReleaseDate && (
-          <CountdownBadge releaseDate={release.firstReleaseDate} />
+        {release['first-release-date'] && (
+          <CountdownBadge releaseDate={release['first-release-date']} />
         )}
         {/* <p className="text-xs text-muted-foreground truncate" title={releaseDateFormatted}>{releaseDateFormatted}</p> */}
       </CardFooter>
