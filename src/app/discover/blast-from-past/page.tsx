@@ -2,12 +2,15 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/components/providers/AuthProvider';
-import {
-  getUserTopTracks,
-  getUserRecentTracks,
-} from '@/lib/api/lastfm';
+import { getUserTopTracks, getUserRecentTracks } from '@/lib/api/lastfm';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { toast } from 'sonner';
 import Image from 'next/image';
@@ -34,13 +37,19 @@ export default function BlastFromPastPage() {
   const [forgottenTracks, setForgottenTracks] = useState<LastFM.TopTrack[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [period, setPeriod] = useState<LastFMPeriod>(DEFAULT_PERIOD as LastFMPeriod);
+  const [period, setPeriod] = useState<LastFMPeriod>(
+    DEFAULT_PERIOD as LastFMPeriod,
+  );
 
   useEffect(() => {
     if (user) {
-      const usernameFromMeta = user.user_metadata?.lastfm_username as string | undefined;
-      const sessionKeyFromMeta = user.user_metadata?.lastfm_session_key as string | undefined;
-      
+      const usernameFromMeta = user.user_metadata?.lastfm_username as
+        | string
+        | undefined;
+      const sessionKeyFromMeta = user.user_metadata?.lastfm_session_key as
+        | string
+        | undefined;
+
       setLastfmUsername(usernameFromMeta || null);
       setLastfmSessionKey(sessionKeyFromMeta || null);
 
@@ -56,7 +65,9 @@ export default function BlastFromPastPage() {
   useEffect(() => {
     const fetchForgottenTracks = async () => {
       if (!lastfmUsername || !lastfmSessionKey) {
-        setError('Last.fm account not connected or session key missing. Please connect in settings and ensure profile data is synced.');
+        setError(
+          'Last.fm account not connected or session key missing. Please connect in settings and ensure profile data is synced.',
+        );
         setIsLoading(false);
         return;
       }
@@ -67,12 +78,7 @@ export default function BlastFromPastPage() {
       try {
         const [topTracksResponse, recentTracksResponse] = await Promise.all([
           getUserTopTracks(lastfmUsername, period, 100, 1),
-          getUserRecentTracks(
-            lastfmUsername,
-            RECENT_TRACKS_LIMIT,
-            1,
-            0
-          ),
+          getUserRecentTracks(lastfmUsername, RECENT_TRACKS_LIMIT, 1, 0),
         ]);
 
         let topTracks: LastFM.TopTrack[] = [];
@@ -111,13 +117,21 @@ export default function BlastFromPastPage() {
         }
 
         const recentTrackIdentifiers = new Set<string>();
-        recentTracks.forEach(track => {
-          const artistName = (track.artist && track.artist['#text']) ? track.artist['#text'] : 'unknown artist';
-          recentTrackIdentifiers.add(`${artistName.toLowerCase()}_${track.name.toLowerCase()}`);
+        recentTracks.forEach((track) => {
+          const artistName =
+            track.artist && track.artist['#text']
+              ? track.artist['#text']
+              : 'unknown artist';
+          recentTrackIdentifiers.add(
+            `${artistName.toLowerCase()}_${track.name.toLowerCase()}`,
+          );
         });
 
-        const forgotten = topTracks.filter(track => {
-          const artistName = (track.artist && track.artist['#text']) ? track.artist['#text'] : 'unknown artist';
+        const forgotten = topTracks.filter((track) => {
+          const artistName =
+            track.artist && track.artist['#text']
+              ? track.artist['#text']
+              : 'unknown artist';
           const trackIdentifier = `${artistName.toLowerCase()}_${track.name.toLowerCase()}`;
           return !recentTrackIdentifiers.has(trackIdentifier);
         });
@@ -149,7 +163,8 @@ export default function BlastFromPastPage() {
     return (
       <div className="container mx-auto py-8 text-center">
         <p className="mb-4">
-          Please log in and connect your Last.fm account in settings to use this feature.
+          Please log in and connect your Last.fm account in settings to use this
+          feature.
         </p>
         <Link href="/settings/connections">
           <Button>Go to Settings</Button>
@@ -162,7 +177,9 @@ export default function BlastFromPastPage() {
     return (
       <div className="container mx-auto py-8 text-center">
         <LoadingSpinner className="h-12 w-12 mx-auto" />
-        <p className="mt-4 text-muted-foreground">Digging through your archives...</p>
+        <p className="mt-4 text-muted-foreground">
+          Digging through your archives...
+        </p>
       </div>
     );
   }
@@ -171,7 +188,10 @@ export default function BlastFromPastPage() {
     return (
       <div className="container mx-auto py-8 text-center">
         <p className="text-red-500">Error: {error}</p>
-        <Button onClick={() => setPeriod(DEFAULT_PERIOD as LastFMPeriod)} className="mt-4">
+        <Button
+          onClick={() => setPeriod(DEFAULT_PERIOD as LastFMPeriod)}
+          className="mt-4"
+        >
           Try Again with Default Period
         </Button>
       </div>
@@ -184,7 +204,8 @@ export default function BlastFromPastPage() {
         <div>
           <h1 className="text-3xl font-bold">Blasts From The Past</h1>
           <p className="text-muted-foreground">
-            Rediscover tracks from your Last.fm history you haven&apos;t listened to recently.
+            Rediscover tracks from your Last.fm history you haven&apos;t
+            listened to recently.
           </p>
         </div>
         <div className="flex space-x-2">
@@ -204,27 +225,41 @@ export default function BlastFromPastPage() {
 
       {forgottenTracks.length === 0 && !isLoading && (
         <p className="text-center text-muted-foreground">
-          No forgotten tracks found for the period &quot;{period}&quot;. Either everything is fresh or no data found.
+          No forgotten tracks found for the period &quot;{period}&quot;. Either
+          everything is fresh or no data found.
         </p>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
         {forgottenTracks.map((track) => (
-          <Card key={track.mbid || `${track.artist?.['#text']}-${track.name}` } className="flex flex-col">
+          <Card
+            key={track.mbid || `${track.artist?.['#text']}-${track.name}`}
+            className="flex flex-col"
+          >
             <CardHeader className="p-4">
               <div className="relative aspect-square w-full mb-2">
                 <Image
-                  src={track.image.find((img: LastFM.Image) => img.size === 'extralarge')?.['#text'] || placeholderImage(200,200)}
+                  src={
+                    track.image.find(
+                      (img: LastFM.Image) => img.size === 'extralarge',
+                    )?.['#text'] || placeholderImage(200, 200)
+                  }
                   alt={`Cover for ${track.name}`}
                   fill
                   sizes="(max-width: 640px) 90vw, (max-width: 768px) 45vw, (max-width: 1024px) 30vw, 20vw"
                   className="object-cover rounded-md"
                 />
               </div>
-              <CardTitle className="text-lg leading-tight truncate" title={track.name}>
+              <CardTitle
+                className="text-lg leading-tight truncate"
+                title={track.name}
+              >
                 {track.name}
               </CardTitle>
-              <CardDescription className="truncate" title={track.artist?.['#text']}>
+              <CardDescription
+                className="truncate"
+                title={track.artist?.['#text']}
+              >
                 {track.artist?.['#text']}
               </CardDescription>
             </CardHeader>
