@@ -68,7 +68,6 @@ export default function CalendarPage({
           key={query} // Re-trigger suspense when query changes
           fallback={<LoadingSpinner className="mt-8 w-12 h-12 mx-auto" />}
         >
-          {/* @ts-expect-error Server Component */}
           <ReleasesList query={query} />
         </Suspense>
       </ErrorBoundary>
