@@ -93,7 +93,7 @@ export function ManualScrobbleForm({
       setIsOpen(false); // Close dialog on success
     } else if (response.scrobbles['@attr'].ignored > 0) {
       const ignoredReason =
-        response.scrobbles.scrobble[0]?.ignoredmessage?.['#text'] ||
+        response.scrobbles.scrobble[0]?.ignoredMessage?.['#text'] ||
         'Track ignored by Last.fm';
       toast.warning(`Scrobble ignored: ${ignoredReason}`);
     } else {
