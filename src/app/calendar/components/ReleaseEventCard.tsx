@@ -1,4 +1,4 @@
-import { MBRelease } from '@/lib/api/musicbrainz';
+import { MusicBrainz } from '@/types/musicbrainz';
 import {
   Card,
   CardContent,
@@ -13,7 +13,7 @@ import { differenceInDays, format, parseISO } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 
 interface ReleaseEventCardProps {
-  release: MBRelease;
+  release: MusicBrainz.ReleaseGroup;
 }
 
 const CountdownBadge = ({ releaseDate }: { releaseDate: string }) => {

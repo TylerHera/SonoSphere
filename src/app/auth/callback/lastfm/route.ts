@@ -35,10 +35,17 @@ export async function GET(request: Request) {
       return NextResponse.redirect(
         `${origin}/settings/connections?error=lastfm_session_failed&code=${sessionResponse.error}`,
       );
-    } 
-    
-    if (!sessionResponse.session || !sessionResponse.session.key || !sessionResponse.session.name) {
-      console.error('Last.fm GetSession Error: Invalid session data received.', sessionResponse);
+    }
+
+    if (
+      !sessionResponse.session ||
+      !sessionResponse.session.key ||
+      !sessionResponse.session.name
+    ) {
+      console.error(
+        'Last.fm GetSession Error: Invalid session data received.',
+        sessionResponse,
+      );
       return NextResponse.redirect(
         `${origin}/settings/connections?error=lastfm_invalid_session_data`,
       );

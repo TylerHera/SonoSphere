@@ -1,4 +1,4 @@
-declare namespace MusicBrainz {
+export declare namespace MusicBrainz {
   // Common Primitives
   type MBID = string; // MusicBrainz Identifier (UUID)
   type ISO_8601_Date = string; // YYYY-MM-DD, YYYY-MM, or YYYY
@@ -193,5 +193,3 @@ declare namespace MusicBrainz {
     release: string; // URL to the release on CAA
   }
 }
-
-export {}; // Make this a module
