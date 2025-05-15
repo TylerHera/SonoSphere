@@ -9,6 +9,8 @@ import { AuthModule } from './auth/auth.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { KeepaModule } from './keepa/keepa.module';
+import { PriceAlertsModule } from './price-alerts/price-alerts.module';
 // import { VinylItemsModule } from './vinyl-items/vinyl-items.module'; // To be created
 
 @Module({
@@ -56,6 +58,8 @@ import { AnalyticsModule } from './analytics/analytics.module';
     ProfilesModule,
     AuthModule,
     AnalyticsModule,
+    KeepaModule,
+    PriceAlertsModule,
     // VinylItemsModule
   ],
   controllers: [AppController],

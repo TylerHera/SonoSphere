@@ -132,11 +132,11 @@ export async function searchReleases(searchParams: {
  * @param userAuthToken User's OAuth access token data (complex object for OAuth 1.0a).
  */
 export async function getUserDiscogsCollection(): Promise<any> {
-// discogsUsername: string,
-// folderId: number = 0,
-// sort: string = 'added',
-// sortOrder: string = 'desc',
-// userAuthToken: any // This will be specific to how OAuth 1.0a token is stored
+  // discogsUsername: string,
+  // folderId: number = 0,
+  // sort: string = 'added',
+  // sortOrder: string = 'desc',
+  // userAuthToken: any // This will be specific to how OAuth 1.0a token is stored
   // Replace 'any' with a proper CollectionResult type
   console.warn(
     'getUserDiscogsCollection: Not implemented. Requires Discogs OAuth 1.0a user authentication.',

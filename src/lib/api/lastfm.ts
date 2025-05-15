@@ -190,6 +190,21 @@ export const getUserRecentTracks = async (
   }); // This is a public method, no signing or session key needed usually
 };
 
+export const getUserTopTracks = async (
+  user: string,
+  period: 'overall' | '7day' | '1month' | '3month' | '6month' | '12month' = 'overall',
+  limit: number = 50, // More tracks for better potential pool
+  page: number = 1,
+): Promise<LastFM.UserTopTracksResponse | LastFM.ErrorResponse> => {
+  return lastfmApiRequest<LastFM.UserTopTracksResponse>({
+    method: 'user.getTopTracks',
+    user,
+    period,
+    limit,
+    page,
+  });
+};
+
 // Example for fetching track info (can be used to get more details if needed)
 // export const getTrackInfo = async (artist: string, track: string, username?: string): Promise<any> => {
 //   const params: Record<string, string> = {

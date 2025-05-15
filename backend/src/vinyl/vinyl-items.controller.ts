@@ -12,6 +12,8 @@ import {
   Query,
   ValidationPipe,
   ParseEnumPipe,
+  Res,
+  UploadedFile,
 } from '@nestjs/common';
 import { VinylItemsService, PaginatedVinylItemsResult } from './vinyl-items.service';
 import { CreateVinylItemDto, UpdateVinylItemDto, CollectionItemStatusDto } from './dto';
@@ -19,7 +21,12 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 import { CollectionItemStatus } from '@prisma/client';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
+import { ApiTags, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
 
+@ApiTags('Vinyl Items')
+@ApiBearerAuth()
 @Controller('vinyl-items')
 @UseGuards(JwtAuthGuard) // Protect all routes in this controller
 export class VinylItemsController {
@@ -89,5 +96,39 @@ export class VinylItemsController {
   async remove(@CurrentUser('userId') userId: string, @Param('id', ParseIntPipe) id: number) {
     // TODO: Invalidate cache
     return this.vinylItemsService.remove(userId, id);
+  }
+
+  @Get('export/csv')
+  async exportCsv(@CurrentUser('userId') userId: string, @Res() res: Response) {
+    const csvData = await this.vinylItemsService.exportToCsv(userId);
+    res.header('Content-Type', 'text/csv');
+    res.header('Content-Disposition', `attachment; filename="sonosphere_collection_${userId}.csv"`);
+    res.send(csvData);
+  }
+
+  @Post('import/csv')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'CSV file containing vinyl items to import.',
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file')) // 'file' is the field name in the form-data
+  async importCsv(
+    @CurrentUser('userId') userId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new Error('CSV file is required.'); // Or BadRequestException
+    }
+    const csvString = file.buffer.toString('utf-8');
+    return this.vinylItemsService.importFromCsv(userId, csvString);
   }
 }

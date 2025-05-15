@@ -23,8 +23,12 @@ model Profile {
   user       User     @relation(fields: [id], references: [id], onDelete: Cascade)
   lastfm_session_key String? // Added for Last.fm integration
   lastfm_username    String? // Added for Last.fm integration
+  showcased_badge_ids String[] @default([]) @db.Text // Array of Badge IDs to showcase
 
   vinylItems VinylItem[] // Relation to VinylItem table
+  priceAlerts PriceAlert[] // Relation to PriceAlert table
+  userBadges UserBadge[] // Relation to UserBadges, to easily fetch earned badges for a profile
+  userChallenges UserChallenge[] // Relation to UserChallenges
 
   @@map("profiles") // Explicitly map to the public.profiles table
   @@schema("public")
@@ -40,6 +44,7 @@ model User {
   email   String?   @unique // from auth.users
   // Add other fields from auth.users if you need to reference them and they are stable
   profile Profile? // Relation to Profile table
+  priceAlerts PriceAlert[] // Relation to PriceAlert table
 
   @@map("users") // Map to auth.users table in the auth schema
   @@schema("auth")
@@ -67,6 +72,7 @@ model VinylItem {
   notes           String?
   custom_tags     String[]
   folder          String?   // Added folder field
+  priceAlerts     PriceAlert[] // Relation to PriceAlert table
 
   @@map("vinyl_items")
   @@schema("public")
@@ -78,5 +84,141 @@ enum CollectionItemStatus {
   WISHLIST
   // Could add more like PREORDERED, SOLD, etc. later
 
+  @@schema("public")
+}
+
+model PriceAlert {
+  id             BigInt   @id @default(autoincrement())
+  userId         String   @db.Uuid // Foreign key to auth.users.id
+  user           User     @relation(fields: [userId], references: [id], map: "price_alerts_user_id_fkey", onDelete: Cascade)
+  vinyl_item_id  BigInt?  // Optional link to a local VinylItem
+  vinylItem      VinylItem? @relation(fields: [vinyl_item_id], references: [id], onDelete: SetNull) // If VinylItem deleted, set this to null
+  
+  // Fields for items not in local collection, or for more generic price tracking
+  external_item_id String?  // e.g., ASIN for Amazon, Discogs Release ID if not linked to local VinylItem
+  item_title     String   // Title of the item being tracked
+  item_artist    String?  // Artist of the item being tracked
+  item_type      String   // e.g., "VINYL", "CD", could be an enum later
+  retailer       String   // e.g., "Amazon US", "Amazon UK", "Discogs Marketplace"
+  url_to_item    String?  // Direct URL to the item page
+
+  target_price   Decimal  @db.Decimal(10, 2) // e.g., 25.99
+  currency       String   @db.Char(3)       // e.g., "USD", "GBP", "EUR"
+  
+  current_price  Decimal? @db.Decimal(10, 2) // Last fetched price
+  price_history  Json?    @db.JsonB          // Store historical price points, e.g., [{date: "YYYY-MM-DD", price: 29.99}]
+
+  alert_active   Boolean  @default(true)
+  last_checked_at DateTime? @db.Timestamptz
+  triggered_at    DateTime? @db.Timestamptz // When the alert condition was last met
+  
+  created_at     DateTime @default(now()) @db.Timestamptz
+  updated_at     DateTime @default(now()) @updatedAt @db.Timestamptz
+
+  @@index([userId, alert_active])
+  @@map("price_alerts")
+  @@schema("public")
+}
+
+// Gamification Models
+model Badge {
+  id          String    @id @default(cuid()) // cuid or uuid
+  name        String    @unique
+  description String
+  icon_url    String?   // URL or path to an icon asset
+  criteria    Json      @db.JsonB // Stores rules for awarding, e.g., { type: "scrobbles", count: 100 } or { type: "artist_streak", artistId: "...", count: 5 }
+  category    String    // e.g., "Listening Milestones", "Discovery", "Collection"
+  points      Int       @default(0) // Optional points for gamification scores
+  is_active   Boolean   @default(true) // So badges can be retired
+  created_at  DateTime  @default(now()) @db.Timestamptz
+  updated_at  DateTime  @default(now()) @updatedAt @db.Timestamptz
+
+  userBadges  UserBadge[]
+
+  @@map("badges")
+  @@schema("public")
+}
+
+model UserBadge {
+  id         String   @id @default(cuid())
+  userId     String   @db.Uuid // Foreign key to auth.users.id / Profile.id
+  user       Profile  @relation("UserBadgesToProfile", fields: [userId], references: [id], onDelete: Cascade)
+  badgeId    String
+  badge      Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  awarded_at DateTime @default(now()) @db.Timestamptz
+  progress   Json?    @db.JsonB // Optional: to store current progress towards a multi-step badge, e.g., { current: 50, target: 100 }
+
+  @@unique([userId, badgeId]) // A user can earn a specific badge only once
+  @@map("user_badges")
+  @@schema("public")
+}
+
+model Challenge {
+  id             String    @id @default(cuid())
+  name           String
+  description    String
+  criteria       Json      @db.JsonB // e.g., { type: "listen_genre_new", genre: "Jazz", count: 5, time_window_days: 30 } or { type: "listen_random_album_full" }
+  reward_points  Int       @default(0)
+  badge_reward   Badge?    @relation("ChallengeBadge", fields: [badgeRewardId], references: [id], onDelete: SetNull)
+  badgeRewardId  String?   // Optional: Badge awarded upon completion
+  
+  start_date     DateTime? @db.Timestamptz // Optional: for scheduled challenges
+  end_date       DateTime? @db.Timestamptz // Optional: for timed challenges
+  is_recurring   Boolean   @default(false) // e.g., weekly, monthly
+  recurring_type String?   // e.g., "weekly", "monthly"
+  is_active      Boolean   @default(true)
+  created_at     DateTime  @default(now()) @db.Timestamptz
+  updated_at     DateTime  @default(now()) @updatedAt @db.Timestamptz
+
+  userChallenges UserChallenge[]
+
+  @@map("challenges")
+  @@schema("public")
+}
+
+model UserChallenge {
+  id          String        @id @default(cuid())
+  userId      String        @db.Uuid
+  user        Profile       @relation("UserChallengesToProfile", fields: [userId], references: [id], onDelete: Cascade)
+  challengeId String
+  challenge   Challenge     @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  status      ChallengeStatus @default(ACTIVE)
+  progress    Json?         @db.JsonB // e.g., { current_genre_tracks: 2, target_genre_tracks: 5 }
+  started_at  DateTime      @default(now()) @db.Timestamptz
+  completed_at DateTime?    @db.Timestamptz
+  expires_at   DateTime?    @db.Timestamptz // If challenge has a time limit from start for user
+
+  @@unique([userId, challengeId]) // Assuming a user can only attempt a non-recurring challenge once, or one active instance of a recurring one
+  @@map("user_challenges")
+  @@schema("public")
+}
+
+enum ChallengeStatus {
+  ACTIVE
+  COMPLETED
+  FAILED
+  ABANDONED
+
+  @@schema("public")
+}
+
+model MetadataEditHistory {
+  id            String    @id @default(cuid())
+  itemId        String    // Generic ID for the item being edited (could be VinylItem ID, Track ID, etc.)
+  itemType      String    // Type of item, e.g., "VinylItem", "DigitalTrack"
+  userId        String    @db.Uuid // User who made the change
+  // No direct relation to User/Profile to keep this model more generic, but userId is indexed.
+  
+  timestamp     DateTime  @default(now()) @db.Timestamptz
+  changedFields Json      @db.JsonB // e.g., { "title": { "old": "Old Title", "new": "New Title" }, "year": { "old": 1990, "new": 1991 } }
+  fieldName     String?   // Optional: If logging single field change, specific field name
+  oldValue      String?   // Optional: Old value (stringified for simplicity if single field)
+  newValue      String?   // Optional: New value (stringified if single field)
+  source        String    // e.g., "manual_edit", "musicbrainz_match", "discogs_sync", "system_correction"
+  notes         String?   // Optional notes about the edit
+
+  @@index([itemId, itemType])
+  @@index([userId])
+  @@map("metadata_edit_history")
   @@schema("public")
 } 

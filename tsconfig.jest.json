@@ -1,0 +1,23 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "module": "commonjs"
+  },
+  "include": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "jest.config.js",
+    "jest.setup.js"
+  ],
+  "exclude": [
+    "node_modules",
+    ".next",
+    "out",
+    "cypress"
+  ]
+} 

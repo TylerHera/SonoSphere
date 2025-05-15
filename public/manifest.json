@@ -1,20 +1,28 @@
 {
   "name": "SonoSphere",
   "short_name": "SonoSphere",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "description": "Your personal music and vinyl collection hub.",
   "icons": [
     {
-      "src": "assets/icons/icon-192x192.png",
+      "src": "/assets/icons/icon-192x192.png",
       "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/icons/icon-384x384.png",
+      "sizes": "384x384",
       "type": "image/png"
     },
     {
-      "src": "assets/icons/icon-512x512.png",
+      "src": "/assets/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "theme_color": "#1a1a1a",
+  "background_color": "#1a1a1a",
+  "start_url": "/?source=pwa",
+  "display": "standalone",
+  "orientation": "portrait"
 }

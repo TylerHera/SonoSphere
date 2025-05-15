@@ -1,5 +1,54 @@
 {
-  "node": {},
+  "node": {
+    "842ae037774c8603c5f7a0f8accf1fc18c2e964c": {
+      "workers": {
+        "app/settings/profile/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22D%3A%5C%5CProjects%5C%5CSonoSphere%5C%5Csrc%5C%5Capp%5C%5C(auth)%5C%5Cactions.ts%22%2C%5B%22signUp%22%2C%22signOut%22%2C%22signInWithSpotify%22%2C%22signIn%22%5D%5D%5D&__client_imported__=true!",
+        "app/(auth)/login/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22D%3A%5C%5CProjects%5C%5CSonoSphere%5C%5Csrc%5C%5Capp%5C%5C(auth)%5C%5Cactions.ts%22%2C%5B%22signUp%22%2C%22signOut%22%2C%22signInWithSpotify%22%2C%22signIn%22%5D%5D%5D&__client_imported__=!",
+        "app/(auth)/signup/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22D%3A%5C%5CProjects%5C%5CSonoSphere%5C%5Csrc%5C%5Capp%5C%5C(auth)%5C%5Cactions.ts%22%2C%5B%22signUp%22%2C%22signOut%22%2C%22signInWithSpotify%22%2C%22signIn%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/settings/profile/page": "action-browser",
+        "app/(auth)/login/page": "rsc",
+        "app/(auth)/signup/page": "rsc"
+      }
+    },
+    "8e018ef5747e00e1e576b7374abdbbfbe6b599d2": {
+      "workers": {
+        "app/settings/profile/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22D%3A%5C%5CProjects%5C%5CSonoSphere%5C%5Csrc%5C%5Capp%5C%5C(auth)%5C%5Cactions.ts%22%2C%5B%22signUp%22%2C%22signOut%22%2C%22signInWithSpotify%22%2C%22signIn%22%5D%5D%5D&__client_imported__=true!",
+        "app/(auth)/login/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22D%3A%5C%5CProjects%5C%5CSonoSphere%5C%5Csrc%5C%5Capp%5C%5C(auth)%5C%5Cactions.ts%22%2C%5B%22signUp%22%2C%22signOut%22%2C%22signInWithSpotify%22%2C%22signIn%22%5D%5D%5D&__client_imported__=!",
+        "app/(auth)/signup/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22D%3A%5C%5CProjects%5C%5CSonoSphere%5C%5Csrc%5C%5Capp%5C%5C(auth)%5C%5Cactions.ts%22%2C%5B%22signUp%22%2C%22signOut%22%2C%22signInWithSpotify%22%2C%22signIn%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/settings/profile/page": "action-browser",
+        "app/(auth)/login/page": "rsc",
+        "app/(auth)/signup/page": "rsc"
+      }
+    },
+    "aec7b21948a7d94f011d5c4c7b448aaa86f6fffd": {
+      "workers": {
+        "app/settings/profile/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22D%3A%5C%5CProjects%5C%5CSonoSphere%5C%5Csrc%5C%5Capp%5C%5C(auth)%5C%5Cactions.ts%22%2C%5B%22signUp%22%2C%22signOut%22%2C%22signInWithSpotify%22%2C%22signIn%22%5D%5D%5D&__client_imported__=true!",
+        "app/(auth)/login/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22D%3A%5C%5CProjects%5C%5CSonoSphere%5C%5Csrc%5C%5Capp%5C%5C(auth)%5C%5Cactions.ts%22%2C%5B%22signUp%22%2C%22signOut%22%2C%22signInWithSpotify%22%2C%22signIn%22%5D%5D%5D&__client_imported__=!",
+        "app/(auth)/signup/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22D%3A%5C%5CProjects%5C%5CSonoSphere%5C%5Csrc%5C%5Capp%5C%5C(auth)%5C%5Cactions.ts%22%2C%5B%22signUp%22%2C%22signOut%22%2C%22signInWithSpotify%22%2C%22signIn%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/settings/profile/page": "action-browser",
+        "app/(auth)/login/page": "rsc",
+        "app/(auth)/signup/page": "rsc"
+      }
+    },
+    "b8e6c4b9dd309d2820320d5afb9aead4e03c3270": {
+      "workers": {
+        "app/settings/profile/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22D%3A%5C%5CProjects%5C%5CSonoSphere%5C%5Csrc%5C%5Capp%5C%5C(auth)%5C%5Cactions.ts%22%2C%5B%22signUp%22%2C%22signOut%22%2C%22signInWithSpotify%22%2C%22signIn%22%5D%5D%5D&__client_imported__=true!",
+        "app/(auth)/login/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22D%3A%5C%5CProjects%5C%5CSonoSphere%5C%5Csrc%5C%5Capp%5C%5C(auth)%5C%5Cactions.ts%22%2C%5B%22signUp%22%2C%22signOut%22%2C%22signInWithSpotify%22%2C%22signIn%22%5D%5D%5D&__client_imported__=!",
+        "app/(auth)/signup/page": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22D%3A%5C%5CProjects%5C%5CSonoSphere%5C%5Csrc%5C%5Capp%5C%5C(auth)%5C%5Cactions.ts%22%2C%5B%22signUp%22%2C%22signOut%22%2C%22signInWithSpotify%22%2C%22signIn%22%5D%5D%5D&__client_imported__=!"
+      },
+      "layer": {
+        "app/settings/profile/page": "action-browser",
+        "app/(auth)/login/page": "rsc",
+        "app/(auth)/signup/page": "rsc"
+      }
+    }
+  },
   "edge": {},
-  "encryptionKey": "yRtI/AEL3pSYIMT+9zo2NXyY9w92g+8prqwlVV015EU="
+  "encryptionKey": "KBmTTYMwZo4JR2FHcydccXyqPQPBCREtBT/L0lwNYwo="
 }

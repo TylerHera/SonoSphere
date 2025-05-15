@@ -110,6 +110,42 @@ declare namespace LastFM {
     scrobbles: ScrobblesInfo;
   }
 
+  // Types for user.getTopTracks
+  interface TopTrackArtist extends Artist {
+    url: string;
+  }
+
+  interface TopTrack {
+    name: string;
+    duration?: string; // Optional, not always present
+    playcount: string;
+    mbid: string;
+    url: string;
+    artist: TopTrackArtist;
+    image: Image[];
+    '@attr': {
+      rank: string;
+    };
+    // streamable: { '#text': string; fulltrack: string }; // Deprecated or not always useful
+  }
+
+  interface TopTracksAttr {
+    user: string;
+    totalPages: string;
+    page: string;
+    perPage: string;
+    total: string;
+  }
+
+  interface TopTracks {
+    track: TopTrack[];
+    '@attr': TopTracksAttr;
+  }
+
+  interface UserTopTracksResponse {
+    toptracks: TopTracks;
+  }
+
   // General type for API responses that might be an error
   type ApiResponse<T> = T | ErrorResponse;
 }

@@ -2,6 +2,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateVinylItemDto, UpdateVinylItemDto } from './dto';
 import { VinylItem, CollectionItemStatus } from '@prisma/client'; // Verified: CollectionItemStatus is correct from Prisma
+import { stringify } from 'csv-stringify/sync';
+import { parse } from 'csv-parse/sync';
+import * as Papa from 'papaparse';
 
 export interface PaginatedVinylItemsResult {
   data: VinylItem[];
@@ -186,5 +189,113 @@ export class VinylItemsService {
     return this.prisma.vinylItem.delete({
       where: { id }, // id is unique
     });
+  }
+
+  async exportToCsv(userId: string): Promise<string> {
+    const items = await this.prisma.vinylItem.findMany({
+      where: { userId },
+      orderBy: { added_at: 'desc' },
+    });
+
+    if (items.length === 0) {
+      return ''; // Or throw an error, or return a header-only CSV
+    }
+
+    // Define CSV columns (adjust as needed)
+    const columns = [
+      'id', 'discogs_id', 'title', 'artist_main', 'release_title', 'year',
+      'status', 'folder', 'added_at', 'notes', 'custom_tags',
+      // Potentially flatten JSON fields like formats, labels, genres, styles
+      // For simplicity, we'll stringify them or select main parts
+      'formats_json', 'labels_json', 'genres_list', 'styles_list',
+      'cover_url_small', 'cover_url_large'
+    ];
+
+    const data = items.map(item => ({
+      id: item.id,
+      discogs_id: item.discogs_id,
+      title: item.title,
+      artist_main: item.artist_main,
+      release_title: item.release_title,
+      year: item.year,
+      status: item.status,
+      folder: item.folder,
+      added_at: item.added_at.toISOString(),
+      notes: item.notes,
+      custom_tags: item.custom_tags?.join(', '), // Convert array to comma-separated string
+      formats_json: JSON.stringify(item.formats), // Simple stringify
+      labels_json: JSON.stringify(item.labels),
+      genres_list: item.genres?.join(', '),
+      styles_list: item.styles?.join(', '),
+      cover_url_small: item.cover_url_small,
+      cover_url_large: item.cover_url_large,
+    }));
+
+    return stringify(data, { header: true, columns });
+  }
+
+  async importFromCsv(userId: string, csvString: string): Promise<{ count: number; errors: any[] }> {
+    let parsedData;
+    try {
+      // Using PapaParse for robust parsing, especially with potential client-side generation
+      const parseResult = Papa.parse(csvString, {
+        header: true,
+        skipEmptyLines: true,
+        dynamicTyping: true, // Automatically convert numbers, booleans
+      });
+      parsedData = parseResult.data;
+      if (parseResult.errors.length > 0) {
+        // Handle parsing errors. For simplicity, we'll log them and return an error count.
+        // In a real app, you might want more detailed error reporting.
+        console.warn("CSV parsing errors:", parseResult.errors);
+        // return { count: 0, errors: parseResult.errors };
+      }
+    } catch (error) {
+      console.error('Error parsing CSV:', error);
+      throw new Error('Failed to parse CSV data.');
+    }
+
+    if (!parsedData || parsedData.length === 0) {
+      return { count: 0, errors: [{ message: 'No data found in CSV.' }] };
+    }
+
+    let importedCount = 0;
+    const importErrors: any[] = [];
+
+    for (const record of parsedData as any[]) {
+      try {
+        const createDto: CreateVinylItemDto = {
+          title: record.title,
+          artist_main: record.artist_main,
+          discogs_id: record.discogs_id ? Number(record.discogs_id) : null,
+          release_title: record.release_title,
+          year: record.year ? Number(record.year) : null,
+          status: record.status ? record.status as CollectionItemStatus : CollectionItemStatus.OWNED,
+          folder: record.folder,
+          notes: record.notes,
+          custom_tags: record.custom_tags ? record.custom_tags.split(',').map(tag => tag.trim()) : [],
+          // For JSON fields, expect them to be JSON strings or handle appropriately
+          formats: record.formats_json ? JSON.parse(record.formats_json) : null,
+          labels: record.labels_json ? JSON.parse(record.labels_json) : null,
+          genres: record.genres_list ? record.genres_list.split(',').map(g => g.trim()) : [],
+          styles: record.styles_list ? record.styles_list.split(',').map(s => s.trim()) : [],
+          cover_url_small: record.cover_url_small,
+          cover_url_large: record.cover_url_large,
+          // artists_extra will be null if not in CSV or handle its parsing if included
+        };
+
+        // Basic validation (more can be added with class-validator on a DTO if needed)
+        if (!createDto.title || !createDto.artist_main) {
+          importErrors.push({ record, error: 'Missing required fields: title or artist_main' });
+          continue;
+        }
+
+        await this.create(userId, createDto);
+        importedCount++;
+      } catch (error) {
+        importErrors.push({ record, error: error.message });
+      }
+    }
+    return { count: importedCount, errors: importErrors };
   }
 }
