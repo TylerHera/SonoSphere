@@ -3,10 +3,12 @@
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL") // This will be the Supabase connection string for the backend
+  schemas  = ["public", "auth"]
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 // Corresponds to Supabase auth.users table (managed by Supabase)
@@ -19,10 +21,13 @@ model Profile {
   avatar_url String?
   updated_at DateTime @default(now()) @db.Timestamptz
   user       User     @relation(fields: [id], references: [id], onDelete: Cascade)
+  lastfm_session_key String? // Added for Last.fm integration
+  lastfm_username    String? // Added for Last.fm integration
 
   vinylItems VinylItem[] // Relation to VinylItem table
 
   @@map("profiles") // Explicitly map to the public.profiles table
+  @@schema("public")
 }
 
 // This User model is a conceptual link to auth.users for Prisma relations.
@@ -56,11 +61,22 @@ model VinylItem {
   styles          String[]
   cover_url_small String?
   cover_url_large String?
-  status          String    @default("owned") // e.g., 'owned', 'wishlist'
+  status          CollectionItemStatus @default(OWNED) // New field for status
   added_at        DateTime  @default(now()) @db.Timestamptz
   updated_at      DateTime  @default(now()) @updatedAt @db.Timestamptz
   notes           String?
   custom_tags     String[]
+  folder          String?   // Added folder field
 
   @@map("vinyl_items")
+  @@schema("public")
+}
+
+// Enum for item status
+enum CollectionItemStatus {
+  OWNED
+  WISHLIST
+  // Could add more like PREORDERED, SOLD, etc. later
+
+  @@schema("public")
 } 

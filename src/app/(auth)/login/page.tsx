@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { signIn } from '@/app/(auth)/actions';
+import { signIn, signInWithSpotify } from '@/app/(auth)/actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,16 +12,16 @@ export default function LoginPage({ searchParams }: { searchParams: { error?: st
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl">Login to SonoSphere</CardTitle>
           <CardDescription>
-            Enter your email and password to access your account.
+            Enter your email and password or use a provider.
           </CardDescription>
         </CardHeader>
-        <form action={signIn}>
-          <CardContent className="space-y-4">
-            {searchParams.error && (
-              <p className="text-sm font-medium text-destructive">
-                {decodeURIComponent(searchParams.error)}
-              </p>
-            )}
+        <CardContent className="space-y-4">
+          {searchParams.error && (
+            <p className="text-sm font-medium text-destructive">
+              {decodeURIComponent(searchParams.error)}
+            </p>
+          )}
+          <form action={signIn} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input id="email" name="email" type="email" placeholder="m@example.com" required />
@@ -30,20 +30,39 @@ export default function LoginPage({ searchParams }: { searchParams: { error?: st
               <Label htmlFor="password">Password</Label>
               <Input id="password" name="password" type="password" required />
             </div>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full">Login</Button>
-            <Button variant="outline" className="w-full" disabled>
-              Login with Discogs (Coming Soon)
+            <Button type="submit" className="w-full">Login with Email</Button>
+          </form>
+          
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-card px-2 text-muted-foreground">
+                Or continue with
+              </span>
+            </div>
+          </div>
+
+          <form action={signInWithSpotify} className="w-full">
+            <Button variant="outline" className="w-full">
+              {/* Consider adding a Spotify Icon here */}
+              Login with Spotify
             </Button>
-            <p className="text-sm text-center text-muted-foreground">
-              Don&apos;t have an account?{' '}
-              <Link href="/signup" className="font-semibold underline">
-                Sign up
-              </Link>
-            </p>
-          </CardFooter>
-        </form>
+          </form>
+          
+        </CardContent>
+        <CardFooter className="flex flex-col space-y-2">
+          <Button variant="outline" className="w-full" disabled>
+            Login with Discogs (Coming Soon)
+          </Button>
+          <p className="mt-4 text-sm text-center text-muted-foreground">
+            Don&apos;t have an account?{' '}
+            <Link href="/signup" className="font-semibold underline">
+              Sign up
+            </Link>
+          </p>
+        </CardFooter>
       </Card>
     </div>
   );

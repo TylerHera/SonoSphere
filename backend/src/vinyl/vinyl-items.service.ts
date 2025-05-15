@@ -1,7 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateVinylItemDto, UpdateVinylItemDto } from './dto';
-import { VinylItem } from '@prisma/client'; // Import the Prisma-generated type
+import { VinylItem, CollectionItemStatus } from '@prisma/client'; // Verified: CollectionItemStatus is correct from Prisma
+
+export interface PaginatedVinylItemsResult {
+  data: VinylItem[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
 
 @Injectable()
 export class VinylItemsService {
@@ -10,22 +18,105 @@ export class VinylItemsService {
   async create(userId: string, createVinylItemDto: CreateVinylItemDto): Promise<VinylItem> {
     return this.prisma.vinylItem.create({
       data: {
-        ...createVinylItemDto,
-        userId,
+        userId, // Ensure userId is passed directly
+        title: createVinylItemDto.title,
+        artist_main: createVinylItemDto.artist_main,
+        // Optional fields from DTO, Prisma will handle undefined if not provided
+        discogs_id: createVinylItemDto.discogs_id,
+        artists_extra: createVinylItemDto.artists_extra,
+        release_title: createVinylItemDto.release_title,
+        year: createVinylItemDto.year,
+        formats: createVinylItemDto.formats,
+        labels: createVinylItemDto.labels,
+        genres: createVinylItemDto.genres,
+        styles: createVinylItemDto.styles,
+        cover_url_small: createVinylItemDto.cover_url_small,
+        cover_url_large: createVinylItemDto.cover_url_large,
+        notes: createVinylItemDto.notes,
+        custom_tags: createVinylItemDto.custom_tags,
+        status: createVinylItemDto.status,
+        folder: createVinylItemDto.folder, // Added folder explicitly
       },
     });
   }
 
-  async findAll(userId: string): Promise<VinylItem[]> {
-    return this.prisma.vinylItem.findMany({
-      where: { userId },
-      orderBy: {
-        addedAt: 'desc',
-      },
-    });
+  async findAll(
+    userId: string, 
+    page: number = 1, 
+    limit: number = 20,
+    search?: string,
+    status?: CollectionItemStatus, // Uses Prisma's CollectionItemStatus
+    genre?: string,
+    sortBy?: string, // e.g., 'added_at', 'title', 'artist_main', 'year'
+    sortOrder?: 'asc' | 'desc',
+    tags?: string, // Comma-separated list of tags
+    folder?: string, // Added folder filter
+  ): Promise<PaginatedVinylItemsResult> {
+    const skip = (page - 1) * limit;
+    const take = limit;
+
+    const whereClause: any = { userId };
+
+    if (search) {
+      whereClause.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { artist_main: { contains: search, mode: 'insensitive' } },
+        { release_title: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    if (status) {
+      whereClause.status = status;
+    }
+
+    if (genre) {
+      whereClause.genres = { has: genre }; // Assumes genre is a single string to check for existence in the array
+    }
+
+    if (tags) {
+      const tagsArray = tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+      if (tagsArray.length > 0) {
+        whereClause.custom_tags = { hasSome: tagsArray };
+      }
+    }
+
+    if (folder) { 
+      whereClause.folder = folder;
+    }
+
+    const orderByClause: any = {};
+    if (sortBy && sortOrder) {
+      // Validate sortBy to prevent injection and ensure it's a valid field
+      const validSortByFields = ['added_at', 'title', 'artist_main', 'year'];
+      if (validSortByFields.includes(sortBy)) {
+        orderByClause[sortBy] = sortOrder;
+      } else {
+        orderByClause['added_at'] = 'desc'; // Default sort if invalid sortBy
+      }
+    } else {
+      orderByClause['added_at'] = 'desc'; // Default sort
+    }
+
+    const [items, total] = await this.prisma.$transaction([
+      this.prisma.vinylItem.findMany({
+        where: whereClause,
+        orderBy: orderByClause,
+        skip,
+        take,
+      }),
+      this.prisma.vinylItem.count({ where: whereClause }),
+    ]);
+
+    return {
+      data: items,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
-  async findOne(userId: string, id: string): Promise<VinylItem | null> {
+  async findOne(userId: string, id: number): Promise<VinylItem | null> {
     const vinylItem = await this.prisma.vinylItem.findUnique({
       where: { id },
     });
@@ -38,20 +129,46 @@ export class VinylItemsService {
 
   async update(
     userId: string,
-    id: string,
+    id: number,
     updateVinylItemDto: UpdateVinylItemDto,
   ): Promise<VinylItem> {
-    // First, verify the item exists and belongs to the user
     await this.findOne(userId, id);
-    // findOne throws NotFoundException if not found or not owned by user, so no need to check again here.
+
+    // Explicitly map fields to prevent accidental updates of sensitive fields like userId
+    // and to ensure only fields present in UpdateVinylItemDto are processed.
+    const dataToUpdate: Partial<VinylItem> = {}; // Use Partial<VinylItem> for type safety
+
+    // List all fields from UpdateVinylItemDto that can be updated
+    if (updateVinylItemDto.title !== undefined) dataToUpdate.title = updateVinylItemDto.title;
+    if (updateVinylItemDto.artist_main !== undefined) dataToUpdate.artist_main = updateVinylItemDto.artist_main;
+    if (updateVinylItemDto.discogs_id !== undefined) dataToUpdate.discogs_id = updateVinylItemDto.discogs_id;
+    if (updateVinylItemDto.artists_extra !== undefined) dataToUpdate.artists_extra = updateVinylItemDto.artists_extra;
+    if (updateVinylItemDto.release_title !== undefined) dataToUpdate.release_title = updateVinylItemDto.release_title;
+    if (updateVinylItemDto.year !== undefined) dataToUpdate.year = updateVinylItemDto.year;
+    if (updateVinylItemDto.formats !== undefined) dataToUpdate.formats = updateVinylItemDto.formats;
+    if (updateVinylItemDto.labels !== undefined) dataToUpdate.labels = updateVinylItemDto.labels;
+    if (updateVinylItemDto.genres !== undefined) dataToUpdate.genres = updateVinylItemDto.genres;
+    if (updateVinylItemDto.styles !== undefined) dataToUpdate.styles = updateVinylItemDto.styles;
+    if (updateVinylItemDto.cover_url_small !== undefined) dataToUpdate.cover_url_small = updateVinylItemDto.cover_url_small;
+    if (updateVinylItemDto.cover_url_large !== undefined) dataToUpdate.cover_url_large = updateVinylItemDto.cover_url_large;
+    if (updateVinylItemDto.notes !== undefined) dataToUpdate.notes = updateVinylItemDto.notes;
+    if (updateVinylItemDto.custom_tags !== undefined) dataToUpdate.custom_tags = updateVinylItemDto.custom_tags;
+    if (updateVinylItemDto.status !== undefined) dataToUpdate.status = updateVinylItemDto.status;
+    if (updateVinylItemDto.folder !== undefined) dataToUpdate.folder = updateVinylItemDto.folder; // Added folder
+
+    // Prevent attempting to update with an empty object if no valid fields were passed
+    if (Object.keys(dataToUpdate).length === 0) {
+        // Optionally, could return the item as is, or throw a BadRequestException
+        return this.findOne(userId, id); // Return existing item if no changes
+    }
 
     return this.prisma.vinylItem.update({
-      where: { id }, // id is unique, so no need for userId here in the where clause for update
-      data: updateVinylItemDto,
+      where: { id },
+      data: dataToUpdate,
     });
   }
 
-  async remove(userId: string, id: string): Promise<VinylItem> {
+  async remove(userId: string, id: number): Promise<VinylItem> {
     // First, verify the item exists and belongs to the user
     await this.findOne(userId, id);
     // findOne throws NotFoundException if not found or not owned by user.

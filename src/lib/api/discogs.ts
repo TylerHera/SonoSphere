@@ -22,6 +22,8 @@ export interface DiscogsRelease {
   notes?: string;
   labels?: { name: string; catno?: string }[];
   formats?: { name: string; qty: string; descriptions?: string[]; text?: string }[];
+  uri?: string; // Relative web URI e.g., /Pink-Floyd-The-Dark-Side-Of-The-Moon/master/10362
+  resource_url?: string; // API resource URL
   // Add more fields as needed based on Discogs API response
 }
 

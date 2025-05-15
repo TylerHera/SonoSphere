@@ -47,6 +47,30 @@ export async function signIn(formData: FormData) {
   return redirect('/'); // Redirect to home page or dashboard
 }
 
+export async function signInWithSpotify() {
+  const supabase = createClient();
+  const origin = headers().get('origin');
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'spotify',
+    options: {
+      redirectTo: `${origin}/auth/callback/spotify`,
+      scopes: 'user-read-email user-read-private streaming user-read-playback-state user-modify-playback-state user-library-read user-library-modify playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private',
+    },
+  });
+
+  if (error) {
+    console.error('Spotify Sign In Error:', error.message);
+    return redirect('/login?error=' + encodeURIComponent('Could not authenticate with Spotify.'));
+  }
+
+  if (data.url) {
+    return redirect(data.url); // Redirect to Spotify authorization page
+  }
+
+  return redirect('/login?error=' + encodeURIComponent('An unexpected error occurred.'));
+}
+
 export async function signOut() {
   const supabase = createClient();
   await supabase.auth.signOut();
