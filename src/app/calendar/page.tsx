@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { SearchParams } from '@/types/next'; // Assuming you have a type for searchParams
-import { searchUpcomingReleases, MBRelease } from '@/lib/api/musicbrainz';
+import { searchUpcomingReleases } from '@/lib/api/musicbrainz';
+import { MusicBrainz } from '@/types/musicbrainz'; // Import the namespace
 import { ReleaseEventCard } from './components/ReleaseEventCard';
 import { CalendarSearchForm } from './components/CalendarSearchForm';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary'; // Assuming you have an ErrorBoundary
@@ -8,7 +9,7 @@ import { LoadingSpinner } from '@/components/common/LoadingSpinner'; // Assuming
 
 async function ReleasesList({ query }: { query?: string }) {
   // Fetch upcoming releases - adjust daysAhead or add more sophisticated filtering as needed
-  let releases: MBRelease[] = [];
+  let releases: MusicBrainz.ReleaseGroup[] = [];
   try {
     releases = await searchUpcomingReleases(query, 90);
   } catch (error) {
