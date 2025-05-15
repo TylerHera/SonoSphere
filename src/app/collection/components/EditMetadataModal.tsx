@@ -52,17 +52,19 @@ export function EditMetadataModal({
   vinylItem,
   onSave,
 }: EditMetadataModalProps) {
-  const [formData, setFormData] = useState<Partial<VinylItem>>(() => 
-    vinylItem ? {
-      title: vinylItem.title || '',
-      artist_main: vinylItem.artist_main || '',
-      release_title: vinylItem.release_title || '',
-      year: vinylItem.year || undefined,
-      status: vinylItem.status || 'OWNED',
-      notes: vinylItem.notes || '',
-      folder: vinylItem.folder || '',
-      genres: vinylItem.genres ? [...vinylItem.genres] : [],
-    } : initialFormData
+  const [formData, setFormData] = useState<Partial<VinylItem>>(() =>
+    vinylItem
+      ? {
+          title: vinylItem.title || '',
+          artist_main: vinylItem.artist_main || '',
+          release_title: vinylItem.release_title || '',
+          year: vinylItem.year || undefined,
+          status: vinylItem.status || 'OWNED',
+          notes: vinylItem.notes || '',
+          folder: vinylItem.folder || '',
+          genres: vinylItem.genres ? [...vinylItem.genres] : [],
+        }
+      : initialFormData,
   );
   const [mbSearchQuery, setMbSearchQuery] = useState('');
   const [mbReleaseResults, setMbReleaseResults] = useState<
@@ -112,7 +114,10 @@ export function EditMetadataModal({
   const handleGenreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Assuming genres are input as comma-separated string for now
     const { value } = e.target;
-    setFormData((prev) => ({ ...prev, genres: value.split(',').map(s => s.trim()) }));
+    setFormData((prev) => ({
+      ...prev,
+      genres: value.split(',').map((s) => s.trim()),
+    }));
   };
 
   const handleSubmit = (e: FormEvent) => {
@@ -150,8 +155,7 @@ export function EditMetadataModal({
       setFormData((prev) => ({
         ...prev,
         title: mbRelease.title || prev.title,
-        artist_main:
-          mbRelease['artist-credit']?.[0]?.name || prev.artist_main,
+        artist_main: mbRelease['artist-credit']?.[0]?.name || prev.artist_main,
         release_title: mbRelease.title || prev.release_title, // Often same as overall title for a release
         year: mbRelease.date
           ? parseInt(mbRelease.date.substring(0, 4), 10)
@@ -211,11 +215,13 @@ export function EditMetadataModal({
           {/* ... other form fields ... */}
           <div>
             <Label htmlFor="genres">Genres (comma-separated)</Label>
-            <Input 
-              id="genres" 
-              name="genres" 
-              value={Array.isArray(formData.genres) ? formData.genres.join(', ') : ''} 
-              onChange={handleGenreChange} 
+            <Input
+              id="genres"
+              name="genres"
+              value={
+                Array.isArray(formData.genres) ? formData.genres.join(', ') : ''
+              }
+              onChange={handleGenreChange}
             />
           </div>
 
@@ -256,13 +262,19 @@ export function EditMetadataModal({
             <ScrollArea className="h-[200px] border rounded-md p-2">
               <ul className="space-y-2">
                 {mbReleaseResults.map((mbRelease) => (
-                  <li key={mbRelease.id} className="text-sm p-2 border-b last:border-b-0">
+                  <li
+                    key={mbRelease.id}
+                    className="text-sm p-2 border-b last:border-b-0"
+                  >
                     <div>
                       <strong>{mbRelease.title}</strong> by{' '}
-                      {mbRelease['artist-credit']?.map((ac) => ac.name).join(', ')}
+                      {mbRelease['artist-credit']
+                        ?.map((ac) => ac.name)
+                        .join(', ')}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {mbRelease.date} ({mbRelease.country}) - Status: {mbRelease.status}
+                      {mbRelease.date} ({mbRelease.country}) - Status:{' '}
+                      {mbRelease.status}
                     </div>
                     <Button
                       size="sm"
