@@ -8,6 +8,6 @@ import { AuthModule } from '../auth/auth.module'; // For JWT Guard dependency
   imports: [PrismaModule, AuthModule], // AuthModule might be needed if JwtAuthGuard is provided there
   controllers: [PriceAlertsController],
   providers: [PriceAlertsService],
-  exports: [PriceAlertsService] // If other modules need to use this service
+  exports: [PriceAlertsService], // If other modules need to use this service
 })
-export class PriceAlertsModule {} 
+export class PriceAlertsModule {}

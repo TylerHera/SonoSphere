@@ -13,7 +13,7 @@ export function getLocalStorageItem<T>(key: string): T | null {
     console.warn(`Error reading localStorage key "${key}":`, error);
     // Fallback for non-JSON strings, though we intend to store JSON primarily
     const item = window.localStorage.getItem(APP_PREFIX + key);
-    return item as T | null; 
+    return item as T | null;
   }
 }
 
@@ -58,7 +58,13 @@ export interface PlaybackPosition {
  * Saves playback position for a specific track and user.
  * userId is used to namespace the key further if needed, or can be part of trackId itself if globally unique.
  */
-export function savePlaybackPosition(userId: string, source: string, trackId: string, positionMs: number, durationMs?: number) {
+export function savePlaybackPosition(
+  userId: string,
+  source: string,
+  trackId: string,
+  positionMs: number,
+  durationMs?: number,
+) {
   const key = `${PLAYBACK_POSITION_KEY_PREFIX}${userId}_${source}_${trackId}`;
   const data: PlaybackPosition = {
     trackId,
@@ -73,7 +79,11 @@ export function savePlaybackPosition(userId: string, source: string, trackId: st
 /**
  * Retrieves playback position for a specific track and user.
  */
-export function getPlaybackPosition(userId: string, source: string, trackId: string): PlaybackPosition | null {
+export function getPlaybackPosition(
+  userId: string,
+  source: string,
+  trackId: string,
+): PlaybackPosition | null {
   const key = `${PLAYBACK_POSITION_KEY_PREFIX}${userId}_${source}_${trackId}`;
   const data = getLocalStorageItem<PlaybackPosition>(key);
   // Optional: Could add logic here to expire old saved positions, e.g., if timestamp is too old.
@@ -83,7 +93,11 @@ export function getPlaybackPosition(userId: string, source: string, trackId: str
 /**
  * Clears playback position for a specific track and user.
  */
-export function clearPlaybackPosition(userId: string, source: string, trackId: string) {
+export function clearPlaybackPosition(
+  userId: string,
+  source: string,
+  trackId: string,
+) {
   const key = `${PLAYBACK_POSITION_KEY_PREFIX}${userId}_${source}_${trackId}`;
   removeLocalStorageItem(key);
-} 
+}

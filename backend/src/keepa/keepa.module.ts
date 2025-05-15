@@ -4,11 +4,8 @@ import { ConfigModule } from '@nestjs/config';
 import { KeepaService } from './keepa.service';
 
 @Module({
-  imports: [
-    HttpModule,
-    ConfigModule,
-  ],
+  imports: [HttpModule, ConfigModule],
   providers: [KeepaService],
   exports: [KeepaService],
 })
-export class KeepaModule {} 
+export class KeepaModule {}

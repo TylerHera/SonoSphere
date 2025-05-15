@@ -99,9 +99,9 @@ export const SpotifyPlayerProvider: React.FC<SpotifyPlayerProviderProps> = ({
 
   const connectPlayer = useCallback(() => {
     if (player) {
-      player.connect().then(success => {
-        if (success) console.log("Spotify Player connected to SDK.");
-        else console.error("Failed to connect Spotify Player to SDK.");
+      player.connect().then((success) => {
+        if (success) console.log('Spotify Player connected to SDK.');
+        else console.error('Failed to connect Spotify Player to SDK.');
       });
     }
   }, [player]);
@@ -110,7 +110,7 @@ export const SpotifyPlayerProvider: React.FC<SpotifyPlayerProviderProps> = ({
     if (player) {
       // Save current position before disconnecting
       if (user && playerState.currentTrack && playerState.isActive) {
-        player.getCurrentState().then(state => {
+        player.getCurrentState().then((state) => {
           if (state) {
             savePlaybackPosition(
               user.id,
@@ -119,12 +119,16 @@ export const SpotifyPlayerProvider: React.FC<SpotifyPlayerProviderProps> = ({
               state.position,
               state.duration,
             );
-            console.log("Saved position on disconnect:", state.track_window.current_track.name, state.position);
+            console.log(
+              'Saved position on disconnect:',
+              state.track_window.current_track.name,
+              state.position,
+            );
           }
         });
       }
       player.disconnect();
-      console.log("Spotify Player disconnected from SDK.");
+      console.log('Spotify Player disconnected from SDK.');
     }
   }, [player, user, playerState.currentTrack, playerState.isActive]);
 
@@ -173,16 +177,19 @@ export const SpotifyPlayerProvider: React.FC<SpotifyPlayerProviderProps> = ({
         'player_state_changed',
         (state: Spotify.PlaybackState | null) => {
           if (!state) {
-             // If player becomes inactive, save position of the last known track
+            // If player becomes inactive, save position of the last known track
             if (user && playerState.currentTrack && playerState.isActive) {
-                savePlaybackPosition(
-                  user.id,
-                  'spotify',
-                  playerState.currentTrack.uri,
-                  0, // Placeholder
-                  playerState.currentTrack.duration_ms,
-                );
-                console.log("Player became inactive, attempted to save position for:", playerState.currentTrack?.name);
+              savePlaybackPosition(
+                user.id,
+                'spotify',
+                playerState.currentTrack.uri,
+                0, // Placeholder
+                playerState.currentTrack.duration_ms,
+              );
+              console.log(
+                'Player became inactive, attempted to save position for:',
+                playerState.currentTrack?.name,
+              );
             }
             setPlayerState((prev) => ({
               ...prev,
@@ -195,10 +202,12 @@ export const SpotifyPlayerProvider: React.FC<SpotifyPlayerProviderProps> = ({
           }
 
           const newTrack = state.track_window.current_track;
-          
+
           // Add a null check for newTrack, though typically guaranteed by SDK if state is not null.
           if (!newTrack) {
-            console.error("Spotify player_state_changed: newTrack is null, though state is not. This is unexpected.");
+            console.error(
+              'Spotify player_state_changed: newTrack is null, though state is not. This is unexpected.',
+            );
             // Potentially set player to inactive or handle error appropriately
             setPlayerState((prev) => ({
               ...prev,
@@ -221,33 +230,65 @@ export const SpotifyPlayerProvider: React.FC<SpotifyPlayerProviderProps> = ({
             isPlaying: !isPaused,
             currentTrack: newTrack,
           }));
-          
+
           if (user) {
             // Track Change Logic for Smart Resume
             if (currentTrackUri !== previousTrackUriRef.current) {
               if (previousTrackUriRef.current) {
-                clearPlaybackPosition(user.id, 'spotify', previousTrackUriRef.current);
-                console.log("Cleared position for previous track:", previousTrackUriRef.current);
+                clearPlaybackPosition(
+                  user.id,
+                  'spotify',
+                  previousTrackUriRef.current,
+                );
+                console.log(
+                  'Cleared position for previous track:',
+                  previousTrackUriRef.current,
+                );
               }
               previousTrackUriRef.current = currentTrackUri;
 
-              const savedPositionData = getPlaybackPosition(user.id, 'spotify', currentTrackUri);
-              if (savedPositionData && savedPositionData.positionMs > 0 && savedPositionData.positionMs < duration - 5000) { // -5s to avoid seeking to very end
-                console.log(`Found saved position for ${newTrack?.name}: ${savedPositionData.positionMs}ms. Seeking.`);
-                newPlayer.seek(savedPositionData.positionMs).catch(console.error);
+              const savedPositionData = getPlaybackPosition(
+                user.id,
+                'spotify',
+                currentTrackUri,
+              );
+              if (
+                savedPositionData &&
+                savedPositionData.positionMs > 0 &&
+                savedPositionData.positionMs < duration - 5000
+              ) {
+                // -5s to avoid seeking to very end
+                console.log(
+                  `Found saved position for ${newTrack?.name}: ${savedPositionData.positionMs}ms. Seeking.`,
+                );
+                newPlayer
+                  .seek(savedPositionData.positionMs)
+                  .catch(console.error);
               } else {
-                 console.log(`No valid saved position, or starting from beginning for:`, newTrack?.name);
+                console.log(
+                  `No valid saved position, or starting from beginning for:`,
+                  newTrack?.name,
+                );
               }
             }
 
             // Save position on pause
             if (isPaused) {
-              savePlaybackPosition(user.id, 'spotify', currentTrackUri, position, duration);
-              console.log("Saved position on pause:", newTrack?.name, position);
+              savePlaybackPosition(
+                user.id,
+                'spotify',
+                currentTrackUri,
+                position,
+                duration,
+              );
+              console.log('Saved position on pause:', newTrack?.name, position);
             }
           }
 
-          if (oldTrack?.uri !== newTrack.uri || playerState.isPlaying !== !isPaused) {
+          if (
+            oldTrack?.uri !== newTrack.uri ||
+            playerState.isPlaying !== !isPaused
+          ) {
             // Pass newTrack here; it's confirmed non-null above.
             handleScrobbling(newTrack, !isPaused, position, duration);
           }
@@ -266,33 +307,46 @@ export const SpotifyPlayerProvider: React.FC<SpotifyPlayerProviderProps> = ({
         // E.g. premium required
       });
 
-      newPlayer.connect().then(success => {
-          if(success) console.log("Spotify Player SDK connected successfully after setup.");
-          else console.error("Spotify Player SDK failed to connect after setup.");
+      newPlayer.connect().then((success) => {
+        if (success)
+          console.log('Spotify Player SDK connected successfully after setup.');
+        else console.error('Spotify Player SDK failed to connect after setup.');
       });
     };
 
     // Cleanup function
     return () => {
       if (player) {
-         // Save position of current track before disconnecting player instance
+        // Save position of current track before disconnecting player instance
         if (user && playerState.currentTrack && playerState.isActive) {
-            player.getCurrentState().then(state => {
-                if(state) {
-                    savePlaybackPosition(
-                        user.id,
-                        'spotify',
-                        state.track_window.current_track.uri,
-                        state.position,
-                        state.duration
-                    );
-                     console.log("Saved position on component unmount/cleanup for:", state.track_window.current_track.name, state.position);
-                }
-            }).catch(e => console.warn("Could not get current state on unmount to save position", e));
+          player
+            .getCurrentState()
+            .then((state) => {
+              if (state) {
+                savePlaybackPosition(
+                  user.id,
+                  'spotify',
+                  state.track_window.current_track.uri,
+                  state.position,
+                  state.duration,
+                );
+                console.log(
+                  'Saved position on component unmount/cleanup for:',
+                  state.track_window.current_track.name,
+                  state.position,
+                );
+              }
+            })
+            .catch((e) =>
+              console.warn(
+                'Could not get current state on unmount to save position',
+                e,
+              ),
+            );
         }
         player.disconnect(); // Disconnect the Spotify Player instance
         setPlayer(null); // Nullify player state
-        console.log("Spotify Player instance disconnected and cleaned up.");
+        console.log('Spotify Player instance disconnected and cleaned up.');
       }
       if (document.body.contains(script)) {
         document.body.removeChild(script);
@@ -300,7 +354,7 @@ export const SpotifyPlayerProvider: React.FC<SpotifyPlayerProviderProps> = ({
       window.onSpotifyWebPlaybackSDKReady = () => {}; // Assign an empty function
       previousTrackUriRef.current = null;
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spotifyAccessToken, playerState.volume, user]); // user dependency for smart resume
 
   const handleScrobbling = useCallback(
@@ -321,18 +375,24 @@ export const SpotifyPlayerProvider: React.FC<SpotifyPlayerProviderProps> = ({
       }
 
       const primaryTrackArtistName = track.artists?.[0]?.name;
-      const trackAlbum = track.album as Spotify.Album & { artists?: Spotify.Artist[] }; // Type assertion
+      const trackAlbum = track.album as Spotify.Album & {
+        artists?: Spotify.Artist[];
+      }; // Type assertion
       const albumDisplayName = trackAlbum?.name || 'Unknown Album';
 
       if (!primaryTrackArtistName) {
-        console.warn("Track has no primary artist name, skipping Last.fm update/scrobble for:", track.name);
+        console.warn(
+          'Track has no primary artist name, skipping Last.fm update/scrobble for:',
+          track.name,
+        );
         return;
       }
-      
-      const albumArtistName = trackAlbum?.artists?.[0]?.name || primaryTrackArtistName;
+
+      const albumArtistName =
+        trackAlbum?.artists?.[0]?.name || primaryTrackArtistName;
 
       if (lastTrackScrobbledRef.current === track.uri || duration < 30000) {
-        return; 
+        return;
       }
 
       lastfmUpdateNowPlaying(
@@ -349,7 +409,7 @@ export const SpotifyPlayerProvider: React.FC<SpotifyPlayerProviderProps> = ({
 
       const timeToScrobble =
         Math.min(duration * SCROBBLE_PERCENTAGE, SCROBBLE_MAX_TIME) - position;
-        
+
       if (timeToScrobble > 0) {
         scrobbleTimeoutRef.current = setTimeout(() => {
           const currentTimestamp =
@@ -390,7 +450,9 @@ export const SpotifyPlayerProvider: React.FC<SpotifyPlayerProviderProps> = ({
   const play = async (contextUri?: string, uris?: string[]) => {
     if (!player || !playerState.deviceId) {
       console.warn('Spotify Player not ready or no device ID.');
-      toast.error("Spotify player is not ready. Please select it from Spotify devices list.");
+      toast.error(
+        'Spotify player is not ready. Please select it from Spotify devices list.',
+      );
       return;
     }
     // When explicitly playing, clear any saved position for this context/uris
@@ -403,22 +465,25 @@ export const SpotifyPlayerProvider: React.FC<SpotifyPlayerProviderProps> = ({
     // The `player_state_changed` listener will handle `getPlaybackPosition` for the new track.
     try {
       await player.activateElement(); // Ensure player is active
-      await fetch(`https://api.spotify.com/v1/me/player/play?device_id=${playerState.deviceId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${spotifyAccessToken}`,
+      await fetch(
+        `https://api.spotify.com/v1/me/player/play?device_id=${playerState.deviceId}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${spotifyAccessToken}`,
+          },
+          body: JSON.stringify({
+            uris: uris, // Play specific tracks
+            context_uri: contextUri, // Play a context like album/playlist
+            // position_ms: undefined // Let player_state_changed handle resume
+          }),
         },
-        body: JSON.stringify({
-          uris: uris, // Play specific tracks
-          context_uri: contextUri, // Play a context like album/playlist
-          // position_ms: undefined // Let player_state_changed handle resume
-        }),
-      });
-      setPlayerState(prev => ({ ...prev, isPlaying: true }));
+      );
+      setPlayerState((prev) => ({ ...prev, isPlaying: true }));
     } catch (error) {
       console.error('Error playing track(s):', error);
-      toast.error("Failed to play track(s) on Spotify.");
+      toast.error('Failed to play track(s) on Spotify.');
     }
   };
 
@@ -427,7 +492,7 @@ export const SpotifyPlayerProvider: React.FC<SpotifyPlayerProviderProps> = ({
       try {
         await player.pause();
         // Position saving is handled by player_state_changed on pause
-        setPlayerState(prev => ({ ...prev, isPlaying: false }));
+        setPlayerState((prev) => ({ ...prev, isPlaying: false }));
       } catch (error) {
         console.error('Error pausing track:', error);
       }
@@ -438,7 +503,7 @@ export const SpotifyPlayerProvider: React.FC<SpotifyPlayerProviderProps> = ({
     if (player) {
       try {
         await player.resume();
-        setPlayerState(prev => ({ ...prev, isPlaying: true }));
+        setPlayerState((prev) => ({ ...prev, isPlaying: true }));
       } catch (error) {
         console.error('Error resuming track:', error);
       }
@@ -447,18 +512,20 @@ export const SpotifyPlayerProvider: React.FC<SpotifyPlayerProviderProps> = ({
 
   const nextTrack = async () => {
     if (player) {
-       if (user && playerState.currentTrack) { // Clear current track's saved position on explicit skip
-         clearPlaybackPosition(user.id, 'spotify', playerState.currentTrack.uri);
-       }
+      if (user && playerState.currentTrack) {
+        // Clear current track's saved position on explicit skip
+        clearPlaybackPosition(user.id, 'spotify', playerState.currentTrack.uri);
+      }
       await player.nextTrack();
     }
   };
 
   const previousTrack = async () => {
     if (player) {
-      if (user && playerState.currentTrack) { // Clear current track's saved position
-         clearPlaybackPosition(user.id, 'spotify', playerState.currentTrack.uri);
-       }
+      if (user && playerState.currentTrack) {
+        // Clear current track's saved position
+        clearPlaybackPosition(user.id, 'spotify', playerState.currentTrack.uri);
+      }
       await player.previousTrack();
     }
   };
@@ -472,7 +539,7 @@ export const SpotifyPlayerProvider: React.FC<SpotifyPlayerProviderProps> = ({
   const setVolumeCallback = async (newVolume: number) => {
     if (player) {
       await player.setVolume(newVolume);
-      setPlayerState(prev => ({ ...prev, volume: newVolume }));
+      setPlayerState((prev) => ({ ...prev, volume: newVolume }));
     }
   };
 

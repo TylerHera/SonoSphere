@@ -9,4 +9,4 @@ import '@testing-library/jest-dom';
 // jest.mock('next/router', () => require('next-router-mock'));
 
 // Example: Mock environment variables if needed
-// process.env.NEXT_PUBLIC_SOME_VAR = 'test_value'; 
+// process.env.NEXT_PUBLIC_SOME_VAR = 'test_value';

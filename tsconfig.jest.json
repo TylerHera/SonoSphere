@@ -14,10 +14,5 @@
     "jest.config.js",
     "jest.setup.js"
   ],
-  "exclude": [
-    "node_modules",
-    ".next",
-    "out",
-    "cypress"
-  ]
-} 
+  "exclude": ["node_modules", ".next", "out", "cypress"]
+}

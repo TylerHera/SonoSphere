@@ -16,9 +16,12 @@ const musixmatchApiRequest = async <T = any>(
     // Simulate Musixmatch error structure for consistency
     return {
       message: {
-        header: { status_code: 401, hint: 'Authentication failed, missing API key' },
-        body: ''
-      }
+        header: {
+          status_code: 401,
+          hint: 'Authentication failed, missing API key',
+        },
+        body: '',
+      },
     } as Musixmatch.ErrorResponse;
   }
 
@@ -29,12 +32,15 @@ const musixmatchApiRequest = async <T = any>(
   };
 
   const queryString = new URLSearchParams(
-    Object.entries(allParams).reduce((acc, [key, value]) => {
-      if (value !== undefined) {
-        acc[key] = String(value);
-      }
-      return acc;
-    }, {} as Record<string, string>)
+    Object.entries(allParams).reduce(
+      (acc, [key, value]) => {
+        if (value !== undefined) {
+          acc[key] = String(value);
+        }
+        return acc;
+      },
+      {} as Record<string, string>,
+    ),
   ).toString();
 
   try {
@@ -43,7 +49,10 @@ const musixmatchApiRequest = async <T = any>(
 
     // Musixmatch API often wraps success and error in a `message` object
     if (data.message.header.status_code !== 200) {
-      console.warn(`Musixmatch API error (${data.message.header.status_code}):`, data.message.body || data.message.header.hint);
+      console.warn(
+        `Musixmatch API error (${data.message.header.status_code}):`,
+        data.message.body || data.message.header.hint,
+      );
       return data as Musixmatch.ErrorResponse;
     }
     return data as T;
@@ -52,8 +61,8 @@ const musixmatchApiRequest = async <T = any>(
     return {
       message: {
         header: { status_code: 500, hint: 'Network or parsing error' },
-        body: ''
-      }
+        body: '',
+      },
     } as Musixmatch.ErrorResponse;
   }
 };
@@ -69,7 +78,7 @@ export const searchMusixmatchTrack = async (
   queryParams: Musixmatch.TrackIdentifierParams,
   page: number = 1,
   pageSize: number = 5,
-  hasLyricsOnly: 0 | 1 = 1, 
+  hasLyricsOnly: 0 | 1 = 1,
 ): Promise<Musixmatch.ApiResponse<Musixmatch.TrackSearchResponse>> => {
   return musixmatchApiRequest<Musixmatch.TrackSearchResponse>('track.search', {
     q_track: queryParams.track_name,
@@ -108,7 +117,7 @@ export const getMusixmatchSynchronizedLyrics = async (
 export const getMusixmatchLyrics = async (
   trackId: number,
 ): Promise<Musixmatch.ApiResponse<Musixmatch.LyricsResponse>> => {
-    return musixmatchApiRequest<Musixmatch.LyricsResponse>('track.lyrics.get', {
-        track_id: trackId,
-    });
-}; 
+  return musixmatchApiRequest<Musixmatch.LyricsResponse>('track.lyrics.get', {
+    track_id: trackId,
+  });
+};

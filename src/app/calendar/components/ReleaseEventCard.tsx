@@ -1,9 +1,16 @@
-import { MBRelease } from "@/lib/api/musicbrainz";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import Image from "next/image";
-import { placeholderImage } from "@/lib/utils";
+import { MBRelease } from '@/lib/api/musicbrainz';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import Image from 'next/image';
+import { placeholderImage } from '@/lib/utils';
 import { differenceInDays, format, parseISO } from 'date-fns';
-import { Badge } from "@/components/ui/badge";
+import { Badge } from '@/components/ui/badge';
 
 interface ReleaseEventCardProps {
   release: MBRelease;
@@ -17,34 +24,45 @@ const CountdownBadge = ({ releaseDate }: { releaseDate: string }) => {
     const daysUntil = differenceInDays(date, today);
 
     if (daysUntil < 0) {
-      return <Badge variant="outline">Released {format(date, 'MMM d, yyyy')}</Badge>;
+      return (
+        <Badge variant="outline">Released {format(date, 'MMM d, yyyy')}</Badge>
+      );
     }
     if (daysUntil === 0) {
       return <Badge variant="secondary">Releases Today!</Badge>;
     }
     if (daysUntil <= 7) {
-      return <Badge variant="default">{daysUntil} day{daysUntil > 1 ? 's' : ''} left</Badge>;
+      return (
+        <Badge variant="default">
+          {daysUntil} day{daysUntil > 1 ? 's' : ''} left
+        </Badge>
+      );
     }
     return <Badge variant="outline">{format(date, 'MMM d, yyyy')}</Badge>; // Default for future dates > 7 days
-
   } catch (error) {
-    console.error("Error parsing release date for countdown:", releaseDate, error);
+    console.error(
+      'Error parsing release date for countdown:',
+      releaseDate,
+      error,
+    );
     return <Badge variant="destructive">Invalid Date</Badge>;
   }
 };
 
 export function ReleaseEventCard({ release }: ReleaseEventCardProps) {
-  const artistName = release.artistCredit?.[0]?.artist?.name || "Various Artists";
-  const releaseDateFormatted = release.firstReleaseDate ? 
-    format(parseISO(release.firstReleaseDate), 'MMMM d, yyyy') : 'Date N/A';
+  const artistName =
+    release.artistCredit?.[0]?.artist?.name || 'Various Artists';
+  const releaseDateFormatted = release.firstReleaseDate
+    ? format(parseISO(release.firstReleaseDate), 'MMMM d, yyyy')
+    : 'Date N/A';
 
   return (
     <Card className="flex flex-col h-full overflow-hidden">
       <CardHeader className="p-4">
         {release.coverArtUrl ? (
           <div className="relative aspect-square w-full mb-2">
-            <Image 
-              src={release.coverArtUrl} 
+            <Image
+              src={release.coverArtUrl}
               alt={`Cover for ${release.title}`}
               fill
               sizes="(max-width: 640px) 90vw, (max-width: 768px) 45vw, (max-width: 1024px) 30vw, 20vw"
@@ -53,34 +71,44 @@ export function ReleaseEventCard({ release }: ReleaseEventCardProps) {
           </div>
         ) : (
           <div className="relative aspect-square w-full mb-2 bg-muted rounded-md flex items-center justify-center">
-            <Image 
-              src={placeholderImage(200, 200)} 
+            <Image
+              src={placeholderImage(200, 200)}
               alt="Placeholder image"
-              width={100} 
+              width={100}
               height={100}
               className="opacity-50"
             />
           </div>
         )}
-        <CardTitle className="text-lg leading-tight truncate" title={release.title}>
+        <CardTitle
+          className="text-lg leading-tight truncate"
+          title={release.title}
+        >
           {release.title}
         </CardTitle>
-        <CardDescription className="truncate" title={artistName}>{artistName}</CardDescription>
+        <CardDescription className="truncate" title={artistName}>
+          {artistName}
+        </CardDescription>
         {release.disambiguation && (
-            <CardDescription className="text-xs italic truncate" title={release.disambiguation}>
-                ({release.disambiguation})
-            </CardDescription>
+          <CardDescription
+            className="text-xs italic truncate"
+            title={release.disambiguation}
+          >
+            ({release.disambiguation})
+          </CardDescription>
         )}
       </CardHeader>
       <CardContent className="p-4 pt-0 flex-grow">
         <p className="text-sm text-muted-foreground">
-          {release.primaryType || "Release"}
+          {release.primaryType || 'Release'}
         </p>
       </CardContent>
       <CardFooter className="p-4 pt-0 flex justify-between items-center">
-        {release.firstReleaseDate && <CountdownBadge releaseDate={release.firstReleaseDate} />}
+        {release.firstReleaseDate && (
+          <CountdownBadge releaseDate={release.firstReleaseDate} />
+        )}
         {/* <p className="text-xs text-muted-foreground truncate" title={releaseDateFormatted}>{releaseDateFormatted}</p> */}
       </CardFooter>
     </Card>
   );
-} 
+}

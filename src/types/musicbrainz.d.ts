@@ -26,7 +26,7 @@ declare namespace MusicBrainz {
     name: string;
     sort_name: string;
     disambiguation?: string;
-    "iso-3166-1-codes"?: ISO_3166_1_Code[];
+    'iso-3166-1-codes'?: ISO_3166_1_Code[];
     type?: string; // e.g., "Country", "City"
   }
 
@@ -61,7 +61,7 @@ declare namespace MusicBrainz {
     };
     catalog_number?: string;
   }
-  
+
   interface MediumFormat {
     id: MBID;
     name: string; // e.g. "CD", "Vinyl", "Digital Media"
@@ -85,7 +85,7 @@ declare namespace MusicBrainz {
     track_count: number;
     title?: string; // e.g. "Disc 1"
   }
-  
+
   interface ReleaseEvent {
     date?: ISO_8601_Date;
     area?: Area;
@@ -102,31 +102,31 @@ declare namespace MusicBrainz {
     packaging_id?: MBID;
     date?: ISO_8601_Date; // Primary release date of this specific version
     country?: ISO_3166_1_Code; // Primary release country of this specific version
-    "release-events"?: ReleaseEvent[];
-    "artist-credit"?: ArtistCredit[];
-    "label-info"?: LabelInfo[];
+    'release-events'?: ReleaseEvent[];
+    'artist-credit'?: ArtistCredit[];
+    'label-info'?: LabelInfo[];
     media?: Medium[];
-    "track-count"?: number; // Total tracks across all media
-    "cover-art-archive"?: {
+    'track-count'?: number; // Total tracks across all media
+    'cover-art-archive'?: {
       artwork: boolean;
       count: number;
       front: boolean;
       back: boolean;
     };
     score?: number; // Search result score
-    "text-representation"?: { language?: LanguageCode; script?: string };
+    'text-representation'?: { language?: LanguageCode; script?: string };
   }
 
   interface ReleaseGroup {
     id: MBID;
     title: string;
-    "primary-type"?: string; // e.g., "Album", "Single", "EP"
-    "primary-type-id"?: MBID;
-    "secondary-types"?: string[];
-    "secondary-type-ids"?: MBID[];
-    "first-release-date"?: ISO_8601_Date;
+    'primary-type'?: string; // e.g., "Album", "Single", "EP"
+    'primary-type-id'?: MBID;
+    'secondary-types'?: string[];
+    'secondary-type-ids'?: MBID[];
+    'first-release-date'?: ISO_8601_Date;
     disambiguation?: string;
-    "artist-credit"?: ArtistCredit[];
+    'artist-credit'?: ArtistCredit[];
     releases?: Release[]; // If `inc=releases`
     score?: number; // Search result score
   }
@@ -136,14 +136,14 @@ declare namespace MusicBrainz {
     title: string;
     length?: number; // Duration in milliseconds
     disambiguation?: string;
-    "artist-credit"?: ArtistCredit[];
-    "first-release-date"?: ISO_8601_Date; // Date of the earliest release containing this recording
+    'artist-credit'?: ArtistCredit[];
+    'first-release-date'?: ISO_8601_Date; // Date of the earliest release containing this recording
     releases?: Release[]; // If `inc=releases`
     aliases?: Alias[];
     score?: number; // Search result score
     video?: boolean; // True if it's a video recording
   }
-  
+
   // Search Response Wrappers
   interface SearchResponseHeader {
     created: string; // ISO datetime
@@ -162,13 +162,13 @@ declare namespace MusicBrainz {
   }
 
   interface ReleaseGroupSearchResponse extends SearchResponseHeader {
-    "release-groups": ReleaseGroup[];
+    'release-groups': ReleaseGroup[];
   }
 
   interface RecordingSearchResponse extends SearchResponseHeader {
     recordings: Recording[];
   }
-  
+
   // Cover Art Archive Types
   interface CoverArtImage {
     id: string; // usually a number as string
@@ -176,9 +176,9 @@ declare namespace MusicBrainz {
     thumbnails: {
       small?: string; // URL to small thumbnail
       large?: string; // URL to large thumbnail
-      "250"?: string;
-      "500"?: string;
-      "1200"?: string;
+      '250'?: string;
+      '500'?: string;
+      '1200'?: string;
     };
     front: boolean;
     back: boolean;
@@ -192,7 +192,6 @@ declare namespace MusicBrainz {
     images: CoverArtImage[];
     release: string; // URL to the release on CAA
   }
-
 }
 
-export {}; // Make this a module 
+export {}; // Make this a module

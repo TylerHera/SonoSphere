@@ -18,4 +18,4 @@
 
 // It's common to create custom commands to abstract away repetitive actions.
 // For example, a login command:
-// Cypress.Commands.add('login', (email, password) => { ... }) 
+// Cypress.Commands.add('login', (email, password) => { ... })

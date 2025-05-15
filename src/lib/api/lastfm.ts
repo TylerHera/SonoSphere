@@ -192,7 +192,13 @@ export const getUserRecentTracks = async (
 
 export const getUserTopTracks = async (
   user: string,
-  period: 'overall' | '7day' | '1month' | '3month' | '6month' | '12month' = 'overall',
+  period:
+    | 'overall'
+    | '7day'
+    | '1month'
+    | '3month'
+    | '6month'
+    | '12month' = 'overall',
   limit: number = 50, // More tracks for better potential pool
   page: number = 1,
 ): Promise<LastFM.UserTopTracksResponse | LastFM.ErrorResponse> => {

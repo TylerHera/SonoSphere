@@ -87,7 +87,7 @@ export interface SpotifyRecommendationsResponse {
 // Basic artist and album types if not already defined elsewhere
 export interface SpotifyArtist {
   id: string;
-  name:string;
+  name: string;
   uri: string;
   external_urls: {
     spotify: string;
@@ -151,7 +151,11 @@ export interface SpotifyUserProfile {
 
 export interface DiscoveryItem extends SpotifyTrack {
   recommendedBecause?: string; // e.g., "Similar to [Track/Artist Name]", "Popular in your region", "Matches your taste for [Genre]"
-  sourceAlgorithm?: 'spotify-recommendations' | 'custom-similarity' | 'content-based-vinyl' | 'lastfm-history';
+  sourceAlgorithm?:
+    | 'spotify-recommendations'
+    | 'custom-similarity'
+    | 'content-based-vinyl'
+    | 'lastfm-history';
 }
 
 export interface DiscoveryQueue {
@@ -172,4 +176,4 @@ export interface SavedPlaylist extends DiscoveryQueue {
   savedAt: string; // ISO date string
   isPublic?: boolean;
   spotifyPlaylistId?: string; // If saved to Spotify
-} 
+}

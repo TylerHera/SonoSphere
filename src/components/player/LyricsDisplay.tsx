@@ -17,7 +17,7 @@ const LyricsDisplay: React.FC<LyricsDisplayProps> = ({
   parsedLyrics,
   currentTime,
   isPlaying,
-  className = ''
+  className = '',
 }) => {
   const [lines, setLines] = useState<Musixmatch.LyricsLine[]>([]);
   const [currentLineIndex, setCurrentLineIndex] = useState<number>(-1);
@@ -45,25 +45,33 @@ const LyricsDisplay: React.FC<LyricsDisplayProps> = ({
     if (activeLineRef.current && lyricsContainerRef.current) {
       const container = lyricsContainerRef.current;
       const activeLine = activeLineRef.current;
-      
+
       // Scroll to keep the active line somewhat centered
-      const scrollPosition = activeLine.offsetTop - container.offsetTop - (container.clientHeight / 2) + (activeLine.clientHeight / 2);
-      
+      const scrollPosition =
+        activeLine.offsetTop -
+        container.offsetTop -
+        container.clientHeight / 2 +
+        activeLine.clientHeight / 2;
+
       container.scrollTo({
         top: scrollPosition,
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     }
   }, [currentLineIndex]);
 
   if (!lines.length) {
-    return <p className={`text-center text-muted-foreground ${className}`}>No lyrics available.</p>;
+    return (
+      <p className={`text-center text-muted-foreground ${className}`}>
+        No lyrics available.
+      </p>
+    );
   }
 
   return (
-    <ul 
-        ref={lyricsContainerRef} 
-        className={`lyrics-display space-y-2 overflow-y-auto h-64 md:h-96 p-4 rounded-md bg-background/50 ${className}`}
+    <ul
+      ref={lyricsContainerRef}
+      className={`lyrics-display space-y-2 overflow-y-auto h-64 md:h-96 p-4 rounded-md bg-background/50 ${className}`}
     >
       {lines.map((line, index) => (
         <li
@@ -71,9 +79,10 @@ const LyricsDisplay: React.FC<LyricsDisplayProps> = ({
           ref={index === currentLineIndex ? activeLineRef : null}
           className={`
             transition-all duration-300 ease-in-out text-lg md:text-xl text-center p-2 rounded-md
-            ${index === currentLineIndex 
-              ? 'text-primary font-semibold scale-105 bg-primary/10' 
-              : 'text-muted-foreground opacity-60 hover:opacity-100 hover:text-foreground'
+            ${
+              index === currentLineIndex
+                ? 'text-primary font-semibold scale-105 bg-primary/10'
+                : 'text-muted-foreground opacity-60 hover:opacity-100 hover:text-foreground'
             }
           `}
         >
@@ -84,4 +93,4 @@ const LyricsDisplay: React.FC<LyricsDisplayProps> = ({
   );
 };
 
-export default LyricsDisplay; 
+export default LyricsDisplay;

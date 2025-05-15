@@ -24,10 +24,11 @@ export class UpdatePriceAlertDto extends PartialType(CreatePriceAlertDto) {
   triggered_at?: Date;
 
   @ApiPropertyOptional({
-    description: 'Is the alert currently active? Overrides value from CreatePriceAlertDto if provided.',
+    description:
+      'Is the alert currently active? Overrides value from CreatePriceAlertDto if provided.',
     example: false,
   })
   @IsOptional()
   @IsBoolean()
   alert_active?: boolean;
-} 
+}

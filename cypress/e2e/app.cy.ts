@@ -21,6 +21,6 @@ describe('Application Homepage', () => {
     // Example: cy.get('a[href="/collection"]').click();
     // cy.url().should('include', '/collection');
     // cy.get('h1').contains('My Collection'); // Adjust based on actual collection page content
-    cy.log('Placeholder test for navigation to collection page.')
-  })
-}); 
+    cy.log('Placeholder test for navigation to collection page.');
+  });
+});

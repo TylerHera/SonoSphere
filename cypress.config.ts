@@ -19,4 +19,4 @@ export default defineConfig({
     specPattern: 'src/**/*.cy.{js,jsx,ts,tsx}', // If you plan to do component testing
     supportFile: 'cypress/support/component.{js,jsx,ts,tsx}',
   },
-}); 
+});

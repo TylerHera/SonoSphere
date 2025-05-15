@@ -8,7 +8,7 @@
 function normalizeVector(vector: number[]): number[] {
   const magnitude = Math.sqrt(vector.reduce((sum, val) => sum + val * val, 0));
   if (magnitude === 0) return vector; // Avoid division by zero
-  return vector.map(val => val / magnitude);
+  return vector.map((val) => val / magnitude);
 }
 
 /**
@@ -16,7 +16,7 @@ function normalizeVector(vector: number[]): number[] {
  */
 function dotProduct(vecA: number[], vecB: number[]): number {
   if (vecA.length !== vecB.length) {
-    throw new Error("Vectors must have the same length for dot product.");
+    throw new Error('Vectors must have the same length for dot product.');
   }
   return vecA.reduce((sum, val, index) => sum + val * vecB[index], 0);
 }
@@ -26,10 +26,13 @@ function dotProduct(vecA: number[], vecB: number[]): number {
  * Assumes vectors are of the same length.
  * Returns a value between -1 and 1 (or 0 and 1 if vectors are non-negative).
  */
-export function calculateCosineSimilarity(vecA: number[], vecB: number[]): number {
+export function calculateCosineSimilarity(
+  vecA: number[],
+  vecB: number[],
+): number {
   if (vecA.length === 0 || vecB.length === 0) return 0;
   if (vecA.length !== vecB.length) {
-    console.warn("Cosine similarity called with vectors of different lengths.");
+    console.warn('Cosine similarity called with vectors of different lengths.');
     return 0;
   }
 
@@ -43,7 +46,7 @@ export function calculateCosineSimilarity(vecA: number[], vecB: number[]): numbe
   const normVecB = normalizeVector(vecB);
 
   const similarity = dotProduct(normVecA, normVecB);
-  
+
   // Owing to floating point inaccuracies, similarity can sometimes be slightly outside [-1, 1]
   return Math.max(-1, Math.min(1, similarity));
 }
@@ -54,29 +57,33 @@ export function calculateCosineSimilarity(vecA: number[], vecB: number[]): numbe
  * Note: Normalization might be needed depending on the selected features.
  * For instance, tempo is in BPM, loudness in dB. Others are 0-1.
  */
-export const SPOTIFY_FEATURE_VECTOR_KEYS: (keyof SpotifyApi.AudioFeaturesObject)[] = [
-  'danceability',
-  'energy',
-  'valence',
-  'acousticness',
-  'instrumentalness',
-  'liveness',
-  'speechiness',
-  // Consider adding normalized versions of these if used:
-  // 'loudness', (e.g. map -60 to 0 dB to 0-1)
-  // 'tempo', (e.g. map 50-200 BPM to 0-1)
-  // 'key', 'mode', 'time_signature' are categorical/cyclical, harder to use directly in cosine similarity without transformation (e.g. one-hot encoding)
-];
+export const SPOTIFY_FEATURE_VECTOR_KEYS: (keyof SpotifyApi.AudioFeaturesObject)[] =
+  [
+    'danceability',
+    'energy',
+    'valence',
+    'acousticness',
+    'instrumentalness',
+    'liveness',
+    'speechiness',
+    // Consider adding normalized versions of these if used:
+    // 'loudness', (e.g. map -60 to 0 dB to 0-1)
+    // 'tempo', (e.g. map 50-200 BPM to 0-1)
+    // 'key', 'mode', 'time_signature' are categorical/cyclical, harder to use directly in cosine similarity without transformation (e.g. one-hot encoding)
+  ];
 
 // Extended AudioFeaturesObject to include id, uri, etc. if we pass the whole object
-export interface SpotifyAudioFeaturesObjectExtended extends SpotifyApi.AudioFeaturesObject {
+export interface SpotifyAudioFeaturesObjectExtended
+  extends SpotifyApi.AudioFeaturesObject {
   id: string;
   uri: string;
   // Potentially add track name, artists for easier reference if needed, but keep core for vector
 }
 
-export function audioFeaturesToVector(features: SpotifyApi.AudioFeaturesObject | SpotifyAudioFeaturesObjectExtended): number[] {
-  return SPOTIFY_FEATURE_VECTOR_KEYS.map(key => features[key] as number); 
+export function audioFeaturesToVector(
+  features: SpotifyApi.AudioFeaturesObject | SpotifyAudioFeaturesObjectExtended,
+): number[] {
+  return SPOTIFY_FEATURE_VECTOR_KEYS.map((key) => features[key] as number);
   // Casting to number as these specific keys should be numbers.
   // Add more robust error handling or default values if features can be missing.
 }
@@ -96,4 +103,4 @@ export function audioFeaturesToVector(features: SpotifyApi.AudioFeaturesObject |
 //   if (tempo < MIN_TEMPO) return 0;
 //   if (tempo > MAX_TEMPO) return 1;
 //   return (tempo - MIN_TEMPO) / (MAX_TEMPO - MIN_TEMPO);
-// } 
+// }

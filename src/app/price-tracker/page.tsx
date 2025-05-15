@@ -1,10 +1,28 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 export default async function PriceTrackerPage() {
   // TODO: Fetch watchlist items from backend API
   const watchlistItems = [
-    { id: "1", title: "Example Vinyl 1", artist: "Artist A", currentPrice: "$25.99", targetPrice: "$20.00" },
-    { id: "2", title: "Example Vinyl 2", artist: "Artist B", currentPrice: "$30.50", targetPrice: "$28.00" },
+    {
+      id: '1',
+      title: 'Example Vinyl 1',
+      artist: 'Artist A',
+      currentPrice: '$25.99',
+      targetPrice: '$20.00',
+    },
+    {
+      id: '2',
+      title: 'Example Vinyl 2',
+      artist: 'Artist B',
+      currentPrice: '$30.50',
+      targetPrice: '$28.00',
+    },
   ];
 
   return (
@@ -24,8 +42,8 @@ export default async function PriceTrackerPage() {
                 <CardContent>
                   <p>Current Price: {item.currentPrice}</p>
                   <p>Target Price: {item.targetPrice}</p>
-                  {/* TODO: Add link to item detail / price history chart */} 
-                  {/* TODO: Add actions (edit/remove from watchlist) */} 
+                  {/* TODO: Add link to item detail / price history chart */}
+                  {/* TODO: Add actions (edit/remove from watchlist) */}
                 </CardContent>
               </Card>
             ))}
@@ -38,13 +56,16 @@ export default async function PriceTrackerPage() {
 
       {/* Placeholder for Price History Charts - to be implemented in a dedicated component or page */}
       <section>
-        <h2 className="text-2xl font-semibold mb-4">Price History (Placeholder)</h2>
+        <h2 className="text-2xl font-semibold mb-4">
+          Price History (Placeholder)
+        </h2>
         <p className="text-gray-600">
-          Detailed price history charts for selected items will be displayed here or on individual item pages.
+          Detailed price history charts for selected items will be displayed
+          here or on individual item pages.
         </p>
         {/* Example of where a chart component could go */}
         {/* <PriceHistoryChart itemId="some-item-id" /> */}
       </section>
     </div>
   );
-} 
+}

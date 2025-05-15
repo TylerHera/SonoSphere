@@ -1,7 +1,17 @@
-"use client";
+'use client';
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { configureMusicKit, authorizeAppleMusic, unauthorizeAppleMusic } from '@/lib/api/appleMusic';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from 'react';
+import {
+  configureMusicKit,
+  authorizeAppleMusic,
+  unauthorizeAppleMusic,
+} from '@/lib/api/appleMusic';
 
 // Define the shape of the MusicKit instance more precisely if @types/apple-musickit-js is available
 // For now, using 'any' for simplicity
@@ -22,7 +32,9 @@ interface AppleMusicContextType {
   unauthorize: () => Promise<void>;
 }
 
-const AppleMusicContext = createContext<AppleMusicContextType | undefined>(undefined);
+const AppleMusicContext = createContext<AppleMusicContextType | undefined>(
+  undefined,
+);
 
 export const AppleMusicProvider = ({ children }: { children: ReactNode }) => {
   const [musicKit, setMusicKit] = useState<MusicKitInstance | null>(null);
@@ -45,7 +57,7 @@ export const AppleMusicProvider = ({ children }: { children: ReactNode }) => {
           // Example: instance.addEventListener('playbackStateDidChange', handlePlaybackChange);
         }
       } catch (err: any) {
-        console.error("Failed to initialize Apple Music Provider:", err);
+        console.error('Failed to initialize Apple Music Provider:', err);
         if (isMounted) setError(err);
       } finally {
         if (isMounted) setIsLoading(false);
@@ -65,15 +77,16 @@ export const AppleMusicProvider = ({ children }: { children: ReactNode }) => {
 
   const handleAuthorize = async () => {
     if (!musicKit) {
-      console.warn("MusicKit not initialized, cannot authorize.");
-      setError(new Error("MusicKit not available for authorization."));
+      console.warn('MusicKit not initialized, cannot authorize.');
+      setError(new Error('MusicKit not available for authorization.'));
       return;
     }
     try {
       setIsLoading(true);
       const success = await authorizeAppleMusic(); // Uses the one from lib/api
       setIsAuthorized(success);
-      if (!success) setError(new Error("Authorization failed or was denied by user."));
+      if (!success)
+        setError(new Error('Authorization failed or was denied by user.'));
       else setError(null);
     } catch (err: any) {
       setError(err);
@@ -84,7 +97,7 @@ export const AppleMusicProvider = ({ children }: { children: ReactNode }) => {
 
   const handleUnauthorize = async () => {
     if (!musicKit) {
-      console.warn("MusicKit not initialized, cannot unauthorize.");
+      console.warn('MusicKit not initialized, cannot unauthorize.');
       return;
     }
     try {
@@ -96,7 +109,16 @@ export const AppleMusicProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AppleMusicContext.Provider value={{ musicKit, isAuthorized, isLoading, error, authorize: handleAuthorize, unauthorize: handleUnauthorize }}>
+    <AppleMusicContext.Provider
+      value={{
+        musicKit,
+        isAuthorized,
+        isLoading,
+        error,
+        authorize: handleAuthorize,
+        unauthorize: handleUnauthorize,
+      }}
+    >
       {children}
     </AppleMusicContext.Provider>
   );
@@ -108,4 +130,4 @@ export const useAppleMusic = (): AppleMusicContextType => {
     throw new Error('useAppleMusic must be used within an AppleMusicProvider');
   }
   return context;
-}; 
+};

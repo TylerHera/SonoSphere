@@ -1,13 +1,19 @@
 // src/types/search.ts
 
-export type SearchResultSource = 'spotify' | 'appleMusic' | 'discogs' | 'youtube' | 'musicbrainz' | 'internal'; // 'internal' for local DB search
+export type SearchResultSource =
+  | 'spotify'
+  | 'appleMusic'
+  | 'discogs'
+  | 'youtube'
+  | 'musicbrainz'
+  | 'internal'; // 'internal' for local DB search
 
 export interface BaseSearchResult {
   id: string; // Unique ID from the source
   source: SearchResultSource;
   title: string;
-  artist?: string; 
-  album?: string; 
+  artist?: string;
+  album?: string;
   year?: number | string;
   imageUrl?: string;
   url?: string; // Link to the item on the source platform
@@ -37,16 +43,20 @@ export interface DiscogsReleaseSearchResult extends BaseSearchResult {
   thumb?: string;
   country?: string;
   catno?: string;
-  formats?: { name: string, qty: string, descriptions?: string[] }[];
+  formats?: { name: string; qty: string; descriptions?: string[] }[];
 }
 
 // Add more specific types as needed for YouTube, MusicBrainz, etc.
 
-export type UnifiedSearchResult = BaseSearchResult | SpotifyTrackSearchResult | AppleMusicTrackSearchResult | DiscogsReleaseSearchResult; // Union of all possible types
+export type UnifiedSearchResult =
+  | BaseSearchResult
+  | SpotifyTrackSearchResult
+  | AppleMusicTrackSearchResult
+  | DiscogsReleaseSearchResult; // Union of all possible types
 
 export interface AggregatedSearchResults {
   query: string;
   results: UnifiedSearchResult[];
   // countsBySource?: Record<SearchResultSource, number>; // Optional: for UI display
   // errors?: Record<SearchResultSource, string>; // Optional: to show if a source failed
-} 
+}

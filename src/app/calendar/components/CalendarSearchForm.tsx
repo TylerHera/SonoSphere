@@ -1,16 +1,18 @@
-"use client";
+'use client';
 
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Search } from "lucide-react";
+import { Search } from 'lucide-react';
 
 interface CalendarSearchFormProps {
   initialQuery?: string;
 }
 
-export function CalendarSearchForm({ initialQuery = '' }: CalendarSearchFormProps) {
+export function CalendarSearchForm({
+  initialQuery = '',
+}: CalendarSearchFormProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -26,20 +28,23 @@ export function CalendarSearchForm({ initialQuery = '' }: CalendarSearchFormProp
     const current = new URLSearchParams(Array.from(searchParams.entries()));
 
     if (!query.trim()) {
-      current.delete("query");
+      current.delete('query');
     } else {
-      current.set("query", query.trim());
+      current.set('query', query.trim());
     }
     // Reset page if you have pagination
-    // current.delete("page"); 
+    // current.delete("page");
 
     const search = current.toString();
-    const newUrl = `${pathname}${search ? `?${search}` : ""}`;
+    const newUrl = `${pathname}${search ? `?${search}` : ''}`;
     router.push(newUrl);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center gap-2 w-full md:max-w-sm">
+    <form
+      onSubmit={handleSubmit}
+      className="flex items-center gap-2 w-full md:max-w-sm"
+    >
       <Input
         type="search"
         placeholder="Search releases (e.g., artist, album)..."
@@ -52,4 +57,4 @@ export function CalendarSearchForm({ initialQuery = '' }: CalendarSearchFormProp
       </Button>
     </form>
   );
-} 
+}

@@ -29,9 +29,7 @@ export class KeepaService {
   ) {
     this.apiKey = this.configService.get<string>('KEEPA_API_KEY') || '';
     if (!this.apiKey) {
-      this.logger.warn(
-        'Keepa API Key not found. Price tracking functionality will be disabled.',
-      );
+      this.logger.warn('Keepa API Key not found. Price tracking functionality will be disabled.');
     }
   }
 
@@ -44,7 +42,7 @@ export class KeepaService {
     // This is a simplified example. Keepa API has specific request formats and parameters.
     // You would typically need to specify domain, product codes (ASINs), etc.
     // Refer to official Keepa API documentation for actual implementation.
-    const url = `${this.keepaApiBaseUrl}/product`; 
+    const url = `${this.keepaApiBaseUrl}/product`;
     const params = {
       key: this.apiKey,
       domain: 1, // Example: 1 for .com, 2 for .co.uk, etc. (refer to Keepa docs)
@@ -55,9 +53,7 @@ export class KeepaService {
 
     try {
       this.logger.log(`Fetching price history for ASIN: ${asin} from Keepa`);
-      const response = await firstValueFrom(
-        this.httpService.get(url, { params }),
-      );
+      const response = await firstValueFrom(this.httpService.get(url, { params }));
 
       // Placeholder: Adapt this to the actual Keepa API response structure
       if (response.data && response.data.products && response.data.products.length > 0) {
@@ -65,10 +61,12 @@ export class KeepaService {
         // This is a highly simplified mapping. You'll need to parse Keepa's complex CSV or object arrays.
         // Keepa's 'csv' field often contains arrays of [timestamp, price, ...]
         // For example: productData.csv[0] for Amazon price, productData.csv[1] for Marketplace new, etc.
-        const priceHistory: KeepaPriceData[] = (productData.csv[0] || []).map((entry: any[]) => ({
+        const priceHistory: KeepaPriceData[] = (productData.csv[0] || [])
+          .map((entry: any[]) => ({
             timestamp: entry[0], // Keepa timestamps are special (Keepa time minutes + 21564000)
             price: entry[1] === -1 ? null : entry[1], // -1 often means OOS or no data
-        })).filter((ph: any) => ph.price !== null);
+          }))
+          .filter((ph: any) => ph.price !== null);
 
         return {
           asin: productData.asin || asin,
@@ -78,7 +76,8 @@ export class KeepaService {
       }
       this.logger.warn(`No product data found for ASIN: ${asin} in Keepa response`);
       return null;
-    } catch (error: any) { // Explicitly type error as any or a more specific error type
+    } catch (error: any) {
+      // Explicitly type error as any or a more specific error type
       this.logger.error(
         `Failed to fetch price history for ASIN ${asin}: ${error.message}`,
         error.stack,
@@ -95,4 +94,4 @@ export class KeepaService {
   // private keepaTimeToUnixTimestamp(keepaTimeMinutes: number): number {
   //   return (keepaTimeMinutes + 21564000) * 60;
   // }
-} 
+}

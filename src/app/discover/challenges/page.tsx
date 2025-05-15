@@ -1,7 +1,13 @@
 'use client';
 
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
@@ -24,7 +30,8 @@ const mockChallenges = [
   {
     id: '3',
     name: 'Weekly Discovery Champion',
-    description: 'Listen to at least 3 tracks from your Spotify Discover Weekly playlist.',
+    description:
+      'Listen to at least 3 tracks from your Spotify Discover Weekly playlist.',
     progress: 'Completed',
     status: 'Completed',
   },
@@ -49,7 +56,9 @@ export default function ChallengesPage() {
       {mockChallenges.length === 0 && !true /*!isLoading*/ && (
         <Card>
           <CardContent className="pt-6">
-            <p className="text-center text-muted-foreground">No active challenges right now. Check back soon!</p>
+            <p className="text-center text-muted-foreground">
+              No active challenges right now. Check back soon!
+            </p>
           </CardContent>
         </Card>
       )}
@@ -59,28 +68,38 @@ export default function ChallengesPage() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {mockChallenges.map((challenge) => (
-          <Card key={challenge.id} className={`flex flex-col ${challenge.status === 'Completed' ? 'bg-muted/50' : ''}`}>
+          <Card
+            key={challenge.id}
+            className={`flex flex-col ${challenge.status === 'Completed' ? 'bg-muted/50' : ''}`}
+          >
             <CardHeader>
               <CardTitle>{challenge.name}</CardTitle>
               <CardDescription>{challenge.description}</CardDescription>
             </CardHeader>
             <CardContent className="flex-grow">
-              <p className="text-sm text-muted-foreground">Status: {challenge.status}</p>
-              <p className="text-sm text-muted-foreground">Progress: {challenge.progress}</p>
+              <p className="text-sm text-muted-foreground">
+                Status: {challenge.status}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Progress: {challenge.progress}
+              </p>
               {/* TODO: Add more details like time remaining, rewards, etc. */}
             </CardContent>
             {challenge.status !== 'Completed' && (
-                 <div className="p-6 pt-0">
-                    {/* <Button className="w-full">View Details / Log Progress (TODO)</Button> */}
-                 </div>
+              <div className="p-6 pt-0">
+                {/* <Button className="w-full">View Details / Log Progress (TODO)</Button> */}
+              </div>
             )}
           </Card>
         ))}
       </div>
 
       <div className="mt-8 text-center">
-        <p className="text-muted-foreground">More features like creating custom challenges and detailed progress tracking are coming soon!</p>
+        <p className="text-muted-foreground">
+          More features like creating custom challenges and detailed progress
+          tracking are coming soon!
+        </p>
       </div>
     </div>
   );
-} 
+}

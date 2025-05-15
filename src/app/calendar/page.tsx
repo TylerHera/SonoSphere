@@ -12,16 +12,26 @@ async function ReleasesList({ query }: { query?: string }) {
   try {
     releases = await searchUpcomingReleases(query, 90);
   } catch (error) {
-    console.error("Failed to fetch releases for calendar:", error);
+    console.error('Failed to fetch releases for calendar:', error);
     // The API client already logs and returns [], but you could throw here to be caught by ErrorBoundary
     // For now, returning an empty list to allow graceful UI handling.
   }
 
   if (releases.length === 0 && !query) {
-    return <p>No upcoming releases found in the next 90 days, or there was an issue fetching them.</p>;
+    return (
+      <p>
+        No upcoming releases found in the next 90 days, or there was an issue
+        fetching them.
+      </p>
+    );
   }
   if (releases.length === 0 && query) {
-    return <p>No upcoming releases found for your query: "{query}" in the next 90 days.</p>;
+    return (
+      <p>
+        No upcoming releases found for your query: &quot;{query}&quot; in the
+        next 90 days.
+      </p>
+    );
   }
 
   return (
@@ -33,8 +43,13 @@ async function ReleasesList({ query }: { query?: string }) {
   );
 }
 
-export default function CalendarPage({ searchParams }: { searchParams?: SearchParams }) {
-  const query = typeof searchParams?.query === 'string' ? searchParams.query : undefined;
+export default function CalendarPage({
+  searchParams,
+}: {
+  searchParams?: SearchParams;
+}) {
+  const query =
+    typeof searchParams?.query === 'string' ? searchParams.query : undefined;
 
   return (
     <div className="container mx-auto py-8">
@@ -43,12 +58,16 @@ export default function CalendarPage({ searchParams }: { searchParams?: SearchPa
         <CalendarSearchForm initialQuery={query} />
       </div>
 
-      <ErrorBoundary fallback={<p>Could not load releases at the moment. Please try again later.</p>}>
-        <Suspense 
+      <ErrorBoundary
+        fallback={
+          <p>Could not load releases at the moment. Please try again later.</p>
+        }
+      >
+        <Suspense
           key={query} // Re-trigger suspense when query changes
           fallback={<LoadingSpinner className="mt-8 w-12 h-12 mx-auto" />}
         >
-          {/* @ts-expect-error Server Component */} 
+          {/* @ts-expect-error Server Component */}
           <ReleasesList query={query} />
         </Suspense>
       </ErrorBoundary>
@@ -58,4 +77,4 @@ export default function CalendarPage({ searchParams }: { searchParams?: SearchPa
 
 // Basic type for searchParams if not already defined elsewhere
 // You might want to put this in a global types file like src/types/next.ts
-// export interface SearchParams { [key: string]: string | string[] | undefined }; 
+// export interface SearchParams { [key: string]: string | string[] | undefined };

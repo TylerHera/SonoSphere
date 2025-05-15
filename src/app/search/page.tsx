@@ -1,34 +1,50 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
-import { AggregatedSearchResults, UnifiedSearchResult, SearchResultSource } from '@/types/search';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Search } from 'lucide-react';
+import {
+  AggregatedSearchResults,
+  UnifiedSearchResult,
+  SearchResultSource,
+} from '@/types/search';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import Image from 'next/image';
 import { placeholderImage } from '@/lib/utils';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 
 function SearchResultItem({ item }: { item: UnifiedSearchResult }) {
-    const getSourceBadgeVariant = (source: SearchResultSource) => {
-        switch (source) {
-            case 'spotify': return 'default';
-            case 'appleMusic': return 'destructive';
-            case 'discogs': return 'secondary';
-            case 'youtube': return 'outline';
-            default: return 'info';
-        }
-    };
+  const getSourceBadgeVariant = (source: SearchResultSource) => {
+    switch (source) {
+      case 'spotify':
+        return 'default';
+      case 'appleMusic':
+        return 'destructive';
+      case 'discogs':
+        return 'secondary';
+      case 'youtube':
+        return 'outline';
+      default:
+        return 'info';
+    }
+  };
 
   return (
     <Card className="overflow-hidden">
       <CardHeader className="p-0 relative h-40">
-        <Image 
-          src={item.imageUrl || placeholderImage(150,150)} 
+        <Image
+          src={item.imageUrl || placeholderImage(150, 150)}
           alt={`Cover for ${item.title}`}
           fill
           sizes="(max-width: 768px) 50vw, 33vw"
@@ -36,18 +52,40 @@ function SearchResultItem({ item }: { item: UnifiedSearchResult }) {
         />
       </CardHeader>
       <CardContent className="p-4">
-        <CardTitle className="text-lg leading-tight truncate" title={item.title}>{item.title}</CardTitle>
-        {item.artist && <CardDescription className="truncate" title={item.artist}>{item.artist}</CardDescription>}
+        <CardTitle
+          className="text-lg leading-tight truncate"
+          title={item.title}
+        >
+          {item.title}
+        </CardTitle>
+        {item.artist && (
+          <CardDescription className="truncate" title={item.artist}>
+            {item.artist}
+          </CardDescription>
+        )}
         <div className="mt-2 flex items-center gap-2">
-            <Badge variant={getSourceBadgeVariant(item.source)} className="capitalize text-xs">{item.source}</Badge>
-            <Badge variant="outline" className="text-xs capitalize">{item.type}</Badge>
-            {item.year && <Badge variant="outline" className="text-xs">{item.year}</Badge>}
+          <Badge
+            variant={getSourceBadgeVariant(item.source)}
+            className="capitalize text-xs"
+          >
+            {item.source}
+          </Badge>
+          <Badge variant="outline" className="text-xs capitalize">
+            {item.type}
+          </Badge>
+          {item.year && (
+            <Badge variant="outline" className="text-xs">
+              {item.year}
+            </Badge>
+          )}
         </div>
       </CardContent>
       {item.url && item.url !== '#' && (
         <CardFooter className="p-4 pt-0">
           <Button variant="outline" size="sm" asChild>
-            <a href={item.url} target="_blank" rel="noopener noreferrer">View on {item.source}</a>
+            <a href={item.url} target="_blank" rel="noopener noreferrer">
+              View on {item.source}
+            </a>
           </Button>
         </CardFooter>
       )}
@@ -62,7 +100,8 @@ function UnifiedSearchComponent() {
   const initialQuery = searchParams.get('q') || '';
 
   const [query, setQuery] = useState(initialQuery);
-  const [searchResults, setSearchResults] = useState<AggregatedSearchResults | null>(null);
+  const [searchResults, setSearchResults] =
+    useState<AggregatedSearchResults | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -76,16 +115,20 @@ function UnifiedSearchComponent() {
     setError(null);
     try {
       // TODO: Add source selection UI later
-      const response = await fetch(`/api/search?query=${encodeURIComponent(currentQuery.trim())}`);
+      const response = await fetch(
+        `/api/search?query=${encodeURIComponent(currentQuery.trim())}`,
+      );
       if (!response.ok) {
         const errData = await response.json();
-        throw new Error(errData.message || `Search failed with status: ${response.status}`);
+        throw new Error(
+          errData.message || `Search failed with status: ${response.status}`,
+        );
       }
       const data: AggregatedSearchResults = await response.json();
       setSearchResults(data);
     } catch (err: any) {
-      console.error("Search error:", err);
-      setError(err.message || "An unexpected error occurred during search.");
+      console.error('Search error:', err);
+      setError(err.message || 'An unexpected error occurred during search.');
       setSearchResults(null);
     } finally {
       setIsLoading(false);
@@ -111,7 +154,10 @@ function UnifiedSearchComponent() {
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-3xl font-bold mb-6">Unified Search</h1>
-      <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 mb-8">
+      <form
+        onSubmit={handleSearchSubmit}
+        className="flex items-center gap-2 mb-8"
+      >
         <Input
           type="search"
           placeholder="Search Spotify, Apple Music, Discogs..."
@@ -121,7 +167,11 @@ function UnifiedSearchComponent() {
           aria-label="Search query"
         />
         <Button type="submit" disabled={isLoading} aria-label="Submit search">
-          {isLoading ? <LoadingSpinner className="h-4 w-4" /> : <Search className="h-4 w-4" />}
+          {isLoading ? (
+            <LoadingSpinner className="h-4 w-4" />
+          ) : (
+            <Search className="h-4 w-4" />
+          )}
         </Button>
       </form>
 
@@ -132,23 +182,32 @@ function UnifiedSearchComponent() {
         </Alert>
       )}
 
-      {searchResults?.errors && Object.keys(searchResults.errors).length > 0 && (
-        <Alert variant="warning" className="mb-6">
+      {searchResults?.errors &&
+        Object.keys(searchResults.errors).length > 0 && (
+          <Alert variant="warning" className="mb-6">
             <AlertTitle>Source Errors</AlertTitle>
             <AlertDescription>
-                <ul className="list-disc pl-5">
-                {Object.entries(searchResults.errors).map(([source, errMsg]) => (
-                    <li key={source}><strong className="capitalize">{source}:</strong> {errMsg}</li>
-                ))}
-                </ul>
+              <ul className="list-disc pl-5">
+                {Object.entries(searchResults.errors).map(
+                  ([source, errMsg]) => (
+                    <li key={source}>
+                      <strong className="capitalize">{source}:</strong> {errMsg}
+                    </li>
+                  ),
+                )}
+              </ul>
             </AlertDescription>
-        </Alert>
+          </Alert>
+        )}
+
+      {isLoading && !searchResults && (
+        <LoadingSpinner className="mx-auto h-12 w-12 mt-10" />
       )}
 
-      {isLoading && !searchResults && <LoadingSpinner className="mx-auto h-12 w-12 mt-10" />}
-
       {searchResults && searchResults.results.length === 0 && !isLoading && (
-        <p className="text-center text-muted-foreground mt-10">No results found for "{searchResults.query}".</p>
+        <p className="text-center text-muted-foreground mt-10">
+          No results found for &quot;{searchResults.query}&quot;.
+        </p>
       )}
 
       {searchResults && searchResults.results.length > 0 && (
@@ -164,9 +223,15 @@ function UnifiedSearchComponent() {
 
 // Wrap with Suspense because useSearchParams() is used.
 export default function SearchPage() {
-    return (
-        <Suspense fallback={<div className="container mx-auto py-8"><LoadingSpinner className="mx-auto h-12 w-12 mt-10" /></div>}>
-            <UnifiedSearchComponent />
-        </Suspense>
-    );
-} 
+  return (
+    <Suspense
+      fallback={
+        <div className="container mx-auto py-8">
+          <LoadingSpinner className="mx-auto h-12 w-12 mt-10" />
+        </div>
+      }
+    >
+      <UnifiedSearchComponent />
+    </Suspense>
+  );
+}

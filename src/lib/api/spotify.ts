@@ -1,4 +1,9 @@
-import { SpotifyRecommendationsParams, SpotifyRecommendationsResponse, SpotifyUserProfile, SpotifySearchResults } from '@/types/spotify';
+import {
+  SpotifyRecommendationsParams,
+  SpotifyRecommendationsResponse,
+  SpotifyUserProfile,
+  SpotifySearchResults,
+} from '@/types/spotify';
 
 const SPOTIFY_API_BASE_URL = 'https://api.spotify.com/v1';
 
@@ -14,7 +19,7 @@ async function fetchSpotifyApi<T>(
   accessToken: string,
   params?: Record<string, string | number | undefined>,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
-  body?: any
+  body?: any,
 ): Promise<T> {
   const url = new URL(`${SPOTIFY_API_BASE_URL}/${endpoint}`);
   if (params && method === 'GET') {
@@ -41,7 +46,10 @@ async function fetchSpotifyApi<T>(
 
   if (!response.ok) {
     const errorData: SpotifyApiError = await response.json();
-    console.error(`Spotify API Error (${response.status}): ${errorData.error.message}`, errorData);
+    console.error(
+      `Spotify API Error (${response.status}): ${errorData.error.message}`,
+      errorData,
+    );
     throw new Error(`Spotify API Error: ${errorData.error.message}`);
   }
   // For 204 No Content responses (e.g. after PUT to player endpoint with no response body)
@@ -58,13 +66,17 @@ async function fetchSpotifyApi<T>(
  */
 export async function getSpotifyRecommendations(
   accessToken: string,
-  params: SpotifyRecommendationsParams
+  params: SpotifyRecommendationsParams,
 ): Promise<SpotifyRecommendationsResponse> {
   if (!params.seed_artists && !params.seed_genres && !params.seed_tracks) {
-    throw new Error('At least one seed (artist, genre, or track) must be provided for recommendations.');
+    throw new Error(
+      'At least one seed (artist, genre, or track) must be provided for recommendations.',
+    );
   }
   // Ensure seeds are comma-separated strings if they are arrays
-  const queryParams: Record<string, string | number | undefined> = { ...params };
+  const queryParams: Record<string, string | number | undefined> = {
+    ...params,
+  };
 
   if (Array.isArray(params.seed_artists)) {
     queryParams.seed_artists = params.seed_artists.join(',');
@@ -76,14 +88,20 @@ export async function getSpotifyRecommendations(
     queryParams.seed_tracks = params.seed_tracks.join(',');
   }
 
-  return fetchSpotifyApi<SpotifyRecommendationsResponse>('recommendations', accessToken, queryParams);
+  return fetchSpotifyApi<SpotifyRecommendationsResponse>(
+    'recommendations',
+    accessToken,
+    queryParams,
+  );
 }
 
 /**
  * Fetches the current user's profile.
  * Requires a valid access token with the `user-read-private` and `user-read-email` scopes.
  */
-export async function getSpotifyUserProfile(accessToken: string): Promise<SpotifyUserProfile> {
+export async function getSpotifyUserProfile(
+  accessToken: string,
+): Promise<SpotifyUserProfile> {
   return fetchSpotifyApi<SpotifyUserProfile>('me', accessToken);
 }
 
@@ -97,7 +115,7 @@ export async function searchSpotify(
   types: ('album' | 'artist' | 'track')[],
   limit: number = 20,
   offset: number = 0,
-  market?: string
+  market?: string,
 ): Promise<SpotifySearchResults> {
   const params: Record<string, string | number | undefined> = {
     q: query,
@@ -131,4 +149,4 @@ export async function playSpotifyTracks(
 }
 */
 
-// Add more Spotify API functions as needed (e.g., get user's top items, playlists, etc.) 
+// Add more Spotify API functions as needed (e.g., get user's top items, playlists, etc.)

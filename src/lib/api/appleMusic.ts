@@ -1,4 +1,7 @@
-import { NEXT_PUBLIC_APPLE_DEVELOPER_TOKEN, APPLE_MUSIC_API_BASE_URL } from '@/lib/constants/apiKeys';
+import {
+  NEXT_PUBLIC_APPLE_DEVELOPER_TOKEN,
+  APPLE_MUSIC_API_BASE_URL,
+} from '@/lib/constants/apiKeys';
 
 // Declare the MusicKit global object (or import types if available: @types/apple-musickit-js)
 declare global {
@@ -45,13 +48,19 @@ export async function configureMusicKit(): Promise<MusicKitInstance> {
   configurePromise = new Promise((resolve, reject) => {
     if (typeof window === 'undefined' || typeof document === 'undefined') {
       // MusicKit JS relies on window and document, so it can't run server-side.
-      console.warn("MusicKit can only be configured on the client-side.");
-      return reject(new Error("MusicKit can only be configured on the client-side."));
+      console.warn('MusicKit can only be configured on the client-side.');
+      return reject(
+        new Error('MusicKit can only be configured on the client-side.'),
+      );
     }
 
     if (!NEXT_PUBLIC_APPLE_DEVELOPER_TOKEN) {
-      console.error("Apple Developer Token is not configured.");
-      return reject(new Error("Apple Developer Token is not configured. Please set NEXT_PUBLIC_APPLE_DEVELOPER_TOKEN."));
+      console.error('Apple Developer Token is not configured.');
+      return reject(
+        new Error(
+          'Apple Developer Token is not configured. Please set NEXT_PUBLIC_APPLE_DEVELOPER_TOKEN.',
+        ),
+      );
     }
 
     // Load MusicKit JS script
@@ -70,9 +79,11 @@ export async function configureMusicKit(): Promise<MusicKitInstance> {
         });
         musicKitInstance = window.MusicKit.getInstance();
         if (!musicKitInstance) {
-          throw new Error("Failed to get MusicKit instance after configuration.");
+          throw new Error(
+            'Failed to get MusicKit instance after configuration.',
+          );
         }
-        console.log("MusicKit configured successfully.");
+        console.log('MusicKit configured successfully.');
         resolve(musicKitInstance);
       } catch (error) {
         console.error('Error configuring MusicKit:', error);
@@ -127,26 +138,39 @@ export async function unauthorizeAppleMusic(): Promise<void> {
  * @param types Optional array of types to search for (e.g., ['songs', 'albums', 'artists']).
  * @param limit Optional limit for results per type.
  */
-export async function searchAppleMusic(term: string, types?: MusicKit.MediaItemType[], limit: number = 10): Promise<any> {
+export async function searchAppleMusic(
+  term: string,
+  types?: MusicKit.MediaItemType[],
+  limit: number = 10,
+): Promise<any> {
   try {
     const music = await configureMusicKit();
     if (!music.isAuthorized) {
       // Some API calls might work without full user authorization (e.g. catalog search)
       // but playback will require it.
-      console.warn("Apple Music user not authorized. Search results might be limited or playback may fail.");
+      console.warn(
+        'Apple Music user not authorized. Search results might be limited or playback may fail.',
+      );
     }
-    // Note: MusicKit.api.search uses the user's storefront. 
+    // Note: MusicKit.api.search uses the user's storefront.
     // For global search, you might need to use the Apple Music API directly.
     const params = {
-        term,
-        limit,
-        types: types || ['songs', 'albums', 'artists', 'playlists'], // Default search types
-        // storefront: 'us' // You might need to handle storefronts
+      term,
+      limit,
+      types: types || ['songs', 'albums', 'artists', 'playlists'], // Default search types
+      // storefront: 'us' // You might need to handle storefronts
     };
-    const results = await music.api.music(`${APPLE_MUSIC_API_BASE_URL}/v1/catalog/{storefront}/search`, params);
+    const results = await music.api.music(
+      `${APPLE_MUSIC_API_BASE_URL}/v1/catalog/{storefront}/search`,
+      params,
+    );
     return results.data.results; // Structure might vary based on API version
   } catch (error: any) {
-    console.error('Apple Music search error:', error.message, error.response?.data);
+    console.error(
+      'Apple Music search error:',
+      error.message,
+      error.response?.data,
+    );
     throw error;
   }
 }
@@ -157,17 +181,21 @@ export async function searchAppleMusic(term: string, types?: MusicKit.MediaItemT
  * @param kind The kind of item (e.g., 'song', 'album', 'playlist').
  * @param isCollection (Optional) Whether the ID refers to a collection (album/playlist).
  */
-export async function playAppleMusicItem(itemId: string, kind: 'songs' | 'albums' | 'playlists' | 'stations', isCollection: boolean = false): Promise<void> {
+export async function playAppleMusicItem(
+  itemId: string,
+  kind: 'songs' | 'albums' | 'playlists' | 'stations',
+  isCollection: boolean = false,
+): Promise<void> {
   try {
     const music = await configureMusicKit();
     if (!music.isAuthorized) {
       const authorized = await authorizeAppleMusic();
       if (!authorized) {
-        console.error("Cannot play Apple Music item: User not authorized.");
-        throw new Error("User not authorized.");
+        console.error('Cannot play Apple Music item: User not authorized.');
+        throw new Error('User not authorized.');
       }
     }
-    
+
     const queueOptions: any = {};
     if (kind === 'songs') {
       queueOptions.song = itemId;
@@ -176,9 +204,9 @@ export async function playAppleMusicItem(itemId: string, kind: 'songs' | 'albums
     } else if (kind === 'playlists') {
       queueOptions.playlist = itemId;
     } else if (kind === 'stations') {
-        queueOptions.station = itemId; // For radio stations
+      queueOptions.station = itemId; // For radio stations
     } else {
-        throw new Error(`Unsupported item kind: ${kind}`);
+      throw new Error(`Unsupported item kind: ${kind}`);
     }
 
     await music.setQueue(queueOptions);
@@ -192,27 +220,30 @@ export async function playAppleMusicItem(itemId: string, kind: 'songs' | 'albums
 // Add other playback controls as needed: pause, skip, seek, setVolume, etc.
 
 export async function pauseAppleMusic(): Promise<void> {
-    try {
-        const music = await configureMusicKit();
-        await music.pause();
-    } catch (e) { console.error("AM pause error", e)}
+  try {
+    const music = await configureMusicKit();
+    await music.pause();
+  } catch (e) {
+    console.error('AM pause error', e);
+  }
 }
 
 export async function stopAppleMusic(): Promise<void> {
-    try {
-        const music = await configureMusicKit();
-        await music.stop(); // MusicKit.Player.stop()
-    } catch (e) { console.error("AM stop error", e)}
+  try {
+    const music = await configureMusicKit();
+    await music.stop(); // MusicKit.Player.stop()
+  } catch (e) {
+    console.error('AM stop error', e);
+  }
 }
-
 
 // Example: Get current playback state
 export async function getAppleMusicPlaybackState(): Promise<MusicKit.PlaybackStates | null> {
-    try {
-        const music = await configureMusicKit();
-        return music.player.playbackState;
-    } catch (e) { 
-        console.error("AM playback state error", e);
-        return null;
-    }
-} 
+  try {
+    const music = await configureMusicKit();
+    return music.player.playbackState;
+  } catch (e) {
+    console.error('AM playback state error', e);
+    return null;
+  }
+}

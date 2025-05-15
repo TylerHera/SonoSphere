@@ -203,15 +203,28 @@ export class VinylItemsService {
 
     // Define CSV columns (adjust as needed)
     const columns = [
-      'id', 'discogs_id', 'title', 'artist_main', 'release_title', 'year',
-      'status', 'folder', 'added_at', 'notes', 'custom_tags',
+      'id',
+      'discogs_id',
+      'title',
+      'artist_main',
+      'release_title',
+      'year',
+      'status',
+      'folder',
+      'added_at',
+      'notes',
+      'custom_tags',
       // Potentially flatten JSON fields like formats, labels, genres, styles
       // For simplicity, we'll stringify them or select main parts
-      'formats_json', 'labels_json', 'genres_list', 'styles_list',
-      'cover_url_small', 'cover_url_large'
+      'formats_json',
+      'labels_json',
+      'genres_list',
+      'styles_list',
+      'cover_url_small',
+      'cover_url_large',
     ];
 
-    const data = items.map(item => ({
+    const data = items.map((item) => ({
       id: item.id,
       discogs_id: item.discogs_id,
       title: item.title,
@@ -234,7 +247,10 @@ export class VinylItemsService {
     return stringify(data, { header: true, columns });
   }
 
-  async importFromCsv(userId: string, csvString: string): Promise<{ count: number; errors: any[] }> {
+  async importFromCsv(
+    userId: string,
+    csvString: string,
+  ): Promise<{ count: number; errors: any[] }> {
     let parsedData;
     try {
       // Using PapaParse for robust parsing, especially with potential client-side generation
@@ -247,7 +263,7 @@ export class VinylItemsService {
       if (parseResult.errors.length > 0) {
         // Handle parsing errors. For simplicity, we'll log them and return an error count.
         // In a real app, you might want more detailed error reporting.
-        console.warn("CSV parsing errors:", parseResult.errors);
+        console.warn('CSV parsing errors:', parseResult.errors);
         // return { count: 0, errors: parseResult.errors };
       }
     } catch (error) {
@@ -270,15 +286,19 @@ export class VinylItemsService {
           discogs_id: record.discogs_id ? Number(record.discogs_id) : null,
           release_title: record.release_title,
           year: record.year ? Number(record.year) : null,
-          status: record.status ? record.status as CollectionItemStatus : CollectionItemStatus.OWNED,
+          status: record.status
+            ? (record.status as CollectionItemStatus)
+            : CollectionItemStatus.OWNED,
           folder: record.folder,
           notes: record.notes,
-          custom_tags: record.custom_tags ? record.custom_tags.split(',').map(tag => tag.trim()) : [],
+          custom_tags: record.custom_tags
+            ? record.custom_tags.split(',').map((tag) => tag.trim())
+            : [],
           // For JSON fields, expect them to be JSON strings or handle appropriately
           formats: record.formats_json ? JSON.parse(record.formats_json) : null,
           labels: record.labels_json ? JSON.parse(record.labels_json) : null,
-          genres: record.genres_list ? record.genres_list.split(',').map(g => g.trim()) : [],
-          styles: record.styles_list ? record.styles_list.split(',').map(s => s.trim()) : [],
+          genres: record.genres_list ? record.genres_list.split(',').map((g) => g.trim()) : [],
+          styles: record.styles_list ? record.styles_list.split(',').map((s) => s.trim()) : [],
           cover_url_small: record.cover_url_small,
           cover_url_large: record.cover_url_large,
           // artists_extra will be null if not in CSV or handle its parsing if included

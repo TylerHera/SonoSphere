@@ -37,17 +37,28 @@ export class PriceAlertsService {
     }
   }
 
-  async findAll(userId: string, params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.PriceAlertWhereUniqueInput;
-    where?: Prisma.PriceAlertWhereInput;
-    orderBy?: Prisma.PriceAlertOrderByWithRelationInput;
-  }): Promise<{ data: PriceAlert[], total: number, page: number, limit: number, totalPages: number }> {
+  async findAll(
+    userId: string,
+    params: {
+      skip?: number;
+      take?: number;
+      cursor?: Prisma.PriceAlertWhereUniqueInput;
+      where?: Prisma.PriceAlertWhereInput;
+      orderBy?: Prisma.PriceAlertOrderByWithRelationInput;
+    },
+  ): Promise<{
+    data: PriceAlert[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
     const { skip, take, where, orderBy } = params;
     const effectiveWhere = { ...where, userId }; // Ensure user only sees their alerts
 
-    this.logger.log(`Fetching all price alerts for user ${userId} with params: ${JSON.stringify(params)}`);
+    this.logger.log(
+      `Fetching all price alerts for user ${userId} with params: ${JSON.stringify(params)}`,
+    );
     try {
       const [data, total] = await this.prisma.$transaction([
         this.prisma.priceAlert.findMany({
@@ -58,7 +69,7 @@ export class PriceAlertsService {
         }),
         this.prisma.priceAlert.count({ where: effectiveWhere }),
       ]);
-      
+
       const page = take && skip !== undefined ? Math.floor(skip / take) + 1 : 1;
       const limit = take || total;
       const totalPages = limit > 0 ? Math.ceil(total / limit) : 1;
@@ -80,12 +91,8 @@ export class PriceAlertsService {
     });
 
     if (!alert || alert.userId !== userId) {
-      this.logger.warn(
-        `Price alert with ID ${id} not found or does not belong to user ${userId}`,
-      );
-      throw new NotFoundException(
-        `Price alert with ID ${id} not found or not accessible.`,
-      );
+      this.logger.warn(`Price alert with ID ${id} not found or does not belong to user ${userId}`);
+      throw new NotFoundException(`Price alert with ID ${id} not found or not accessible.`);
     }
     return alert;
   }
@@ -137,4 +144,4 @@ export class PriceAlertsService {
 
   // TODO: Add method to be called by a background job to check prices and update alerts
   // async checkAndUpdateAlertPrices(): Promise<void> { ... }
-} 
+}

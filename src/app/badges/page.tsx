@@ -1,8 +1,15 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image'; // Import Next.js Image
 import { useAuth } from '@/components/providers/AuthProvider';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
 import { CheckCircle, LockKeyhole } from 'lucide-react'; // Icons for earned/locked
 import { Badge as UiBadge } from '@/components/ui/badge'; // Renaming to avoid conflict with Badge model type
 
@@ -27,7 +34,7 @@ const mockBadgesData: MockBadge[] = [
     category: 'Listening Milestones',
     points: 10,
     isEarned: true,
-    icon_url: 'https://placehold.co/64x64/green/white?text=S1'
+    icon_url: 'https://placehold.co/64x64/green/white?text=S1',
   },
   {
     id: '2',
@@ -36,7 +43,7 @@ const mockBadgesData: MockBadge[] = [
     category: 'Listening Milestones',
     points: 20,
     isEarned: false,
-    progress: '7/10 plays for "Bohemian Rhapsody"'
+    progress: '7/10 plays for "Bohemian Rhapsody"',
   },
   {
     id: '3',
@@ -45,7 +52,7 @@ const mockBadgesData: MockBadge[] = [
     category: 'Discovery',
     points: 15,
     isEarned: true,
-    icon_url: 'https://placehold.co/64x64/blue/white?text=NAE'
+    icon_url: 'https://placehold.co/64x64/blue/white?text=NAE',
   },
   {
     id: '4',
@@ -54,16 +61,16 @@ const mockBadgesData: MockBadge[] = [
     category: 'Collection',
     points: 25,
     isEarned: false,
-    progress: '3/10 items added'
+    progress: '3/10 items added',
   },
-   {
+  {
     id: '5',
     name: 'Genre Explorer: Jazz',
     description: 'Listen to 10 tracks in the Jazz genre.',
     category: 'Discovery',
     points: 15,
     isEarned: false,
-    progress: '2/10 Jazz tracks'
+    progress: '2/10 Jazz tracks',
   },
   {
     id: '6',
@@ -72,7 +79,7 @@ const mockBadgesData: MockBadge[] = [
     category: 'Listening Milestones',
     points: 50,
     isEarned: true,
-    icon_url: 'https://placehold.co/64x64/orange/white?text=S7'
+    icon_url: 'https://placehold.co/64x64/orange/white?text=S7',
   },
 ];
 
@@ -96,58 +103,93 @@ export default function BadgesPage() {
   // }, [session]);
 
   // For now, directly use mock data
-  const badgesToDisplay = session 
-    ? mockBadgesData 
-    : mockBadgesData.map(b => ({ ...b, isEarned: false, progress: undefined }));
+  const badgesToDisplay = session
+    ? mockBadgesData
+    : mockBadgesData.map((b) => ({
+        ...b,
+        isEarned: false,
+        progress: undefined,
+      }));
 
-  const categories = Array.from(new Set(badgesToDisplay.map(b => b.category)));
+  const categories = Array.from(
+    new Set(badgesToDisplay.map((b) => b.category)),
+  );
 
   // if (isLoading) return <div className="container mx-auto py-8 text-center"><LoadingSpinner /> <p>Loading badges...</p></div>;
   // if (error) return <div className="container mx-auto py-8"><p className="text-red-500">Error: {error}</p></div>;
-  
+
   return (
     <div className="container mx-auto py-8">
       <div className="mb-8 text-center">
         <h1 className="text-4xl font-bold tracking-tight">Your Achievements</h1>
-        <p className="text-muted-foreground mt-2">Track your progress and unlock badges for your listening habits and collection!</p>
+        <p className="text-muted-foreground mt-2">
+          Track your progress and unlock badges for your listening habits and
+          collection!
+        </p>
       </div>
 
-      {categories.map(category => (
+      {categories.map((category) => (
         <section key={category} className="mb-10">
-          <h2 className="text-2xl font-semibold mb-4 pb-2 border-b">{category}</h2>
+          <h2 className="text-2xl font-semibold mb-4 pb-2 border-b">
+            {category}
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {badgesToDisplay.filter(b => b.category === category).map(badge => (
-              <Card 
-                key={badge.id} 
-                className={`flex flex-col items-center text-center p-6 transition-all hover:shadow-lg ${badge.isEarned ? 'border-green-500 bg-green-500/10' : 'border-dashed opacity-70 hover:opacity-100'}`}
-              >
-                {badge.icon_url ? (
-                  <img src={badge.icon_url} alt={badge.name} className="w-16 h-16 mb-3 rounded-full bg-muted" />
-                ) : (
-                  <div className="w-16 h-16 mb-3 rounded-full bg-muted flex items-center justify-center">
-                    {badge.isEarned ? <CheckCircle className="w-8 h-8 text-green-600" /> : <LockKeyhole className="w-8 h-8 text-muted-foreground" />}
-                  </div>
-                )}
-                <h3 className="text-lg font-semibold mb-1">{badge.name}</h3>
-                <p className="text-xs text-muted-foreground mb-2 flex-grow">{badge.description}</p>
-                <UiBadge variant={badge.isEarned ? "default" : "outline"} className="mb-2">
-                  {badge.isEarned ? `Earned (+${badge.points} pts)` : `${badge.points} pts`}
-                </UiBadge>
-                {!badge.isEarned && badge.progress && (
-                  <p className="text-xs text-blue-600 dark:text-blue-400">Progress: {badge.progress}</p>
-                )}
-              </Card>
-            ))}
+            {badgesToDisplay
+              .filter((b) => b.category === category)
+              .map((badge) => (
+                <Card
+                  key={badge.id}
+                  className={`flex flex-col items-center text-center p-6 transition-all hover:shadow-lg ${badge.isEarned ? 'border-green-500 bg-green-500/10' : 'border-dashed opacity-70 hover:opacity-100'}`}
+                >
+                  {badge.icon_url ? (
+                    <Image
+                      src={badge.icon_url}
+                      alt={badge.name}
+                      width={64}
+                      height={64}
+                      className="w-16 h-16 mb-3 rounded-full bg-muted"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 mb-3 rounded-full bg-muted flex items-center justify-center">
+                      {badge.isEarned ? (
+                        <CheckCircle className="w-8 h-8 text-green-600" />
+                      ) : (
+                        <LockKeyhole className="w-8 h-8 text-muted-foreground" />
+                      )}
+                    </div>
+                  )}
+                  <h3 className="text-lg font-semibold mb-1">{badge.name}</h3>
+                  <p className="text-xs text-muted-foreground mb-2 flex-grow">
+                    {badge.description}
+                  </p>
+                  <UiBadge
+                    variant={badge.isEarned ? 'default' : ('outline' as any)}
+                    className="mb-2"
+                  >
+                    {badge.isEarned
+                      ? `Earned (+${badge.points} pts)`
+                      : `${badge.points} pts`}
+                  </UiBadge>
+                  {!badge.isEarned && badge.progress && (
+                    <p className="text-xs text-blue-600 dark:text-blue-400">
+                      Progress: {badge.progress}
+                    </p>
+                  )}
+                </Card>
+              ))}
           </div>
         </section>
       ))}
       {!session && (
-         <Card className="mt-8 text-center p-6 bg-amber-500/10 border-amber-500">
-            <CardTitle>Login to See Your Progress</CardTitle>
-            <CardDescription className="mt-2">You are viewing all available badges. Login to see which ones you've earned and track your progress!</CardDescription>
-            {/* TODO: Add Login Button here if feasible without prop drilling router */}
+        <Card className="mt-8 text-center p-6 bg-amber-500/10 border-amber-500">
+          <CardTitle>Login to See Your Progress</CardTitle>
+          <CardDescription className="mt-2">
+            You are viewing all available badges. Login to see which ones
+            you&apos;ve earned and track your progress!
+          </CardDescription>
+          {/* TODO: Add Login Button here if feasible without prop drilling router */}
         </Card>
       )}
     </div>
   );
-} 
+}

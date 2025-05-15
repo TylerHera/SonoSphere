@@ -56,12 +56,20 @@ export class CreatePriceAlertDto {
   @MaxLength(100)
   retailer: string;
 
-  @ApiPropertyOptional({ description: 'Direct URL to the item page', example: 'https://amazon.com/dp/B0000025A3' })
+  @ApiPropertyOptional({
+    description: 'Direct URL to the item page',
+    example: 'https://amazon.com/dp/B0000025A3',
+  })
   @IsOptional()
   @IsUrl()
   url_to_item?: string;
 
-  @ApiProperty({ description: 'Target price for the alert', example: 25.99, type: 'number', format: 'float' })
+  @ApiProperty({
+    description: 'Target price for the alert',
+    example: 25.99,
+    type: 'number',
+    format: 'float',
+  })
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)
   target_price: number;
@@ -79,4 +87,4 @@ export class CreatePriceAlertDto {
   @IsOptional()
   @IsBoolean()
   alert_active?: boolean = true;
-} 
+}

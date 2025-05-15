@@ -40,26 +40,30 @@ describe('calculateCosineSimilarity', () => {
 
   it('should return 0 for empty vectors', () => {
     expect(calculateCosineSimilarity([], [])).toBe(0);
-    expect(calculateCosineSimilarity([1,2], [])).toBe(0);
-    expect(calculateCosineSimilarity([], [1,2])).toBe(0);
+    expect(calculateCosineSimilarity([1, 2], [])).toBe(0);
+    expect(calculateCosineSimilarity([], [1, 2])).toBe(0);
   });
 
   it('should return 0 for vectors of different lengths and log a warning', () => {
-    const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const consoleWarnSpy = jest
+      .spyOn(console, 'warn')
+      .mockImplementation(() => {});
     const vecA = [1, 2, 3];
     const vecB = [1, 2];
     expect(calculateCosineSimilarity(vecA, vecB)).toBe(0);
-    expect(consoleWarnSpy).toHaveBeenCalledWith("Cosine similarity called with vectors of different lengths.");
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      'Cosine similarity called with vectors of different lengths.',
+    );
     consoleWarnSpy.mockRestore();
   });
 
   it('should handle zero vectors correctly', () => {
     const vecA = [0, 0, 0];
     const vecB = [1, 2, 3];
-    // Cosine similarity is undefined for zero vectors if not handled. 
+    // Cosine similarity is undefined for zero vectors if not handled.
     // Current implementation normalizeVector returns [0,0,0] for zero vector,
     // so dot product will be 0.
     expect(calculateCosineSimilarity(vecA, vecB)).toBeCloseTo(0);
     expect(calculateCosineSimilarity(vecA, vecA)).toBeCloseTo(0); // Dot product of two zero vectors is 0
   });
-}); 
+});

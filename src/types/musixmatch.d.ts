@@ -33,8 +33,9 @@ declare namespace Musixmatch {
 
   interface LyricsLine {
     text: string;
-    time: { // Time in seconds, e.g., total: 123.45 (seconds.milliseconds)
-      total: number; 
+    time: {
+      // Time in seconds, e.g., total: 123.45 (seconds.milliseconds)
+      total: number;
       minutes: number;
       seconds: number;
       hundredths: number; // or milliseconds
@@ -77,4 +78,4 @@ declare namespace Musixmatch {
   type ApiResponse<T> = T | ErrorResponse;
 }
 
-export {}; // Makes this a module 
+export {}; // Makes this a module

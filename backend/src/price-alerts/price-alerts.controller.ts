@@ -1,17 +1,17 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Patch, 
-  Param, 
-  Delete, 
-  UseGuards, 
-  Req, 
-  Query, 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+  Query,
   ParseIntPipe,
   HttpCode,
-  HttpStatus
+  HttpStatus,
 } from '@nestjs/common';
 import { PriceAlertsService } from './price-alerts.service';
 import { CreatePriceAlertDto, UpdatePriceAlertDto } from './dto';
@@ -37,17 +37,27 @@ export class PriceAlertsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all price alerts for the authenticated user' })
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number for pagination' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number for pagination',
+  })
   @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page' })
-  @ApiQuery({ name: 'activeOnly', required: false, type: Boolean, description: 'Filter by active alerts only' })
+  @ApiQuery({
+    name: 'activeOnly',
+    required: false,
+    type: Boolean,
+    description: 'Filter by active alerts only',
+  })
   @ApiResponse({ status: 200, description: 'List of price alerts.' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   findAll(
-    @Req() req: any, 
-    @Query('page') page?: string, 
+    @Req() req: any,
+    @Query('page') page?: string,
     @Query('limit') limit?: string,
     @Query('activeOnly') activeOnly?: string,
-    ) { 
+  ) {
     const userId = req.user.sub;
     const pageNum = page ? parseInt(page, 10) : 1;
     const limitNum = limit ? parseInt(limit, 10) : 10;
@@ -57,12 +67,12 @@ export class PriceAlertsController {
     if (activeOnly && activeOnly.toLowerCase() === 'true') {
       whereClause.alert_active = true;
     }
-    
+
     return this.priceAlertsService.findAll(userId, {
       skip: skip,
       take: limitNum,
       where: whereClause,
-      orderBy: { created_at: 'desc' }, 
+      orderBy: { created_at: 'desc' },
     });
   }
 
@@ -101,4 +111,4 @@ export class PriceAlertsController {
     const userId = req.user.sub;
     return this.priceAlertsService.remove(+id, userId);
   }
-} 
+}
