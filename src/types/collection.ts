@@ -50,4 +50,4 @@ export interface CollectionFilters {
   folder?: string;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
-} 
+}

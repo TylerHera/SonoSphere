@@ -1,24 +1,28 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, FormEvent } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogFooter,
+  DialogDescription,
   DialogClose,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
-  searchReleases,
-  searchRecordings,
-  getReleaseDetails,
-} from '@/lib/api/musicbrainz';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { searchReleases, getReleaseDetails } from '@/lib/api/musicbrainz';
 import type { MusicBrainz } from '@/types/musicbrainz';
 import type { VinylItem } from '@/types/collection'; // Assuming a VinylItem type exists
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
@@ -27,293 +31,255 @@ import { toast } from 'sonner';
 interface EditMetadataModalProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  vinylItem: VinylItem | null; // The item to edit
-  onSave: (updatedItem: Partial<VinylItem>) => Promise<void>; // Function to call when saving
+  vinylItem: VinylItem | null; // Can be null if creating new
+  onSave: (updatedItem: Partial<VinylItem>) => void;
 }
 
-const EditMetadataModal: React.FC<EditMetadataModalProps> = ({
+const initialFormData: Partial<VinylItem> = {
+  title: '',
+  artist_main: '',
+  release_title: '',
+  year: undefined,
+  status: 'OWNED',
+  notes: '',
+  folder: '',
+  genres: [],
+};
+
+export function EditMetadataModal({
   isOpen,
   onOpenChange,
   vinylItem,
   onSave,
-}) => {
-  const [formData, setFormData] = useState<Partial<VinylItem>>({});
+}: EditMetadataModalProps) {
+  const [formData, setFormData] = useState<Partial<VinylItem>>(() => 
+    vinylItem ? {
+      title: vinylItem.title || '',
+      artist_main: vinylItem.artist_main || '',
+      release_title: vinylItem.release_title || '',
+      year: vinylItem.year || undefined,
+      status: vinylItem.status || 'OWNED',
+      notes: vinylItem.notes || '',
+      folder: vinylItem.folder || '',
+      genres: vinylItem.genres ? [...vinylItem.genres] : [],
+    } : initialFormData
+  );
   const [mbSearchQuery, setMbSearchQuery] = useState('');
   const [mbReleaseResults, setMbReleaseResults] = useState<
     MusicBrainz.Release[]
   >([]);
-  const [mbRecordingResults, setMbRecordingResults] = useState<
-    MusicBrainz.Recording[]
-  >([]);
-  const [isLoadingMb, setIsLoadingMb] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+  const [isSearchingMb, setIsSearchingMb] = useState(false);
+  const [isFetchingDetails, setIsFetchingDetails] = useState(false);
 
   useEffect(() => {
-    if (vinylItem) {
-      setFormData({
-        title: vinylItem.title,
-        artist_main: vinylItem.artist_main,
-        release_title: vinylItem.release_title,
-        year: vinylItem.year,
-        genres: Array.isArray(vinylItem.genres)
-          ? [...vinylItem.genres]
-          : typeof vinylItem.genres === 'string'
-            ? vinylItem.genres.split(',').map((s) => s.trim())
-            : [],
-        // ... other fields from VinylItem like labels, formats, tracklist (if it becomes structured)
-      });
-      setMbSearchQuery(
-        `${vinylItem.artist_main || ''} ${vinylItem.title || ''}`.trim(),
-      );
-    } else {
-      setFormData({});
-      setMbSearchQuery('');
+    if (isOpen) {
+      if (vinylItem) {
+        setFormData({
+          title: vinylItem.title || '',
+          artist_main: vinylItem.artist_main || '',
+          release_title: vinylItem.release_title || '',
+          year: vinylItem.year || undefined,
+          status: vinylItem.status || 'OWNED',
+          notes: vinylItem.notes || '',
+          folder: vinylItem.folder || '',
+          genres: vinylItem.genres ? [...vinylItem.genres] : [],
+          // ... other fields from VinylItem like labels, formats, tracklist (if it becomes structured)
+        });
+        setMbSearchQuery(
+          `${vinylItem.artist_main || ''} ${vinylItem.title || ''}`.trim(),
+        );
+        setMbReleaseResults([]);
+      } else {
+        // Reset form for creating a new item
+        setFormData(initialFormData);
+        setMbSearchQuery('');
+        setMbReleaseResults([]);
+      }
     }
-    setMbReleaseResults([]);
-    setMbRecordingResults([]);
-  }, [vinylItem, isOpen]);
+  }, [isOpen, vinylItem]);
 
-  const handleInputChange = (
+  const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
-    if (name === 'year') {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value ? parseInt(value, 10) : undefined,
-      }));
-    } else if (name === 'genres') {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value.split(',').map((s) => s.trim()),
-      }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleMusicBrainzSearch = async (type: 'release' | 'recording') => {
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleGenreChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Assuming genres are input as comma-separated string for now
+    const { value } = e.target;
+    setFormData((prev) => ({ ...prev, genres: value.split(',').map(s => s.trim()) }));
+  };
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    onSave(formData);
+    onOpenChange(false);
+  };
+
+  const handleMusicBrainzSearch = async (e?: FormEvent) => {
+    if (e) e.preventDefault();
     if (!mbSearchQuery.trim()) {
       toast.info('Please enter a search query for MusicBrainz.');
       return;
     }
-    setIsLoadingMb(true);
-    setMbReleaseResults([]);
-    setMbRecordingResults([]);
+    setIsSearchingMb(true);
     try {
-      if (type === 'release') {
-        const response = await searchReleases(mbSearchQuery, 5);
-        setMbReleaseResults(response.releases || []);
-        if (!response.releases || response.releases.length === 0)
-          toast.info('No releases found on MusicBrainz.');
-      } else {
-        // const response = await searchRecordings(mbSearchQuery, 5);
-        // setMbRecordingResults(response.recordings || []);
-        // if (!response.recordings || response.recordings.length === 0) toast.info("No recordings found on MusicBrainz.")
-        toast.info(
-          'Recording search not fully implemented yet. Search for releases instead.',
-        );
+      const results = await searchReleases(mbSearchQuery, 10);
+      setMbReleaseResults(results.releases || []);
+      if (!results.releases || results.releases.length === 0) {
+        toast.info('No releases found on MusicBrainz for your query.');
       }
     } catch (error: any) {
+      console.error('MusicBrainz search error:', error);
       toast.error(`MusicBrainz search failed: ${error.message}`);
+      setMbReleaseResults([]);
     } finally {
-      setIsLoadingMb(false);
+      setIsSearchingMb(false);
     }
   };
 
-  const applyMusicBrainzRelease = async (release: MusicBrainz.Release) => {
-    if (!release.id) return;
-    setIsLoadingMb(true);
+  const handleApplyMusicBrainzData = async (mbid: MusicBrainz.MBID) => {
+    setIsFetchingDetails(true);
     try {
-      // Fetch full release details to get tracklist, etc.
-      const fullRelease = await getReleaseDetails(
-        release.id,
-        'recordings+artist-credits+label-info',
-      );
-
+      const mbRelease = await getReleaseDetails(mbid);
       setFormData((prev) => ({
         ...prev,
-        title: fullRelease.title || prev.title, // Usually this would be album title
+        title: mbRelease.title || prev.title,
         artist_main:
-          fullRelease['artist-credit']?.[0]?.artist.name || prev.artist_main,
-        release_title: fullRelease.title || prev.release_title,
-        year: fullRelease.date
-          ? new Date(fullRelease.date).getFullYear()
+          mbRelease['artist-credit']?.[0]?.name || prev.artist_main,
+        release_title: mbRelease.title || prev.release_title, // Often same as overall title for a release
+        year: mbRelease.date
+          ? parseInt(mbRelease.date.substring(0, 4), 10)
           : prev.year,
-        genres: fullRelease.genres?.map((g: any) => g.name) || prev.genres, // MB schema for genre might be complex
-        // discogs_id: undefined, // Clear discogs_id if applying MB data?
-        // musicbrainz_release_id: fullRelease.id, // Add this if you store MBIDs
-        // labels: fullRelease["label-info"]?.map(li => ({ name: li.label.name, catno: li.catalog_number })) || prev.labels,
-        // formats: fullRelease.media?.map(m => ({ name: m.format, description: m.title })) || prev.formats,
-        // tracklist: fullRelease.media?.flatMap(m => m.tracks?.map(t => ({ position: t.number, title: t.title, duration: t.length ? (t.length / 1000) : undefined }))) || prev.tracklist
+        musicbrainz_release_id: mbRelease.id,
+        // Genres are not directly on MB Release, they are often on Release Group or via tags.
+        // For simplicity, we are not auto-populating genres from here.
+        // User can add them manually or this could be a future enhancement to fetch from release-group.
       }));
-      toast.success(
-        `Applied metadata from "${fullRelease.title}". Review and save.`,
+      toast.success('Applied MusicBrainz data for ' + mbRelease.title);
+    } catch (error: any) {
+      console.error('Failed to fetch or apply MusicBrainz details:', error);
+      toast.error(
+        `Failed to apply MusicBrainz data: ${error.message || 'Unknown error'}`,
       );
-      setMbReleaseResults([]); // Clear results after applying
-    } catch (error: any) {
-      toast.error(`Failed to apply MusicBrainz data: ${error.message}`);
     } finally {
-      setIsLoadingMb(false);
+      setIsFetchingDetails(false);
     }
   };
-
-  const handleSubmit = async () => {
-    if (!vinylItem) return;
-    setIsSaving(true);
-    try {
-      await onSave(formData);
-      toast.success('Metadata updated successfully!');
-      onOpenChange(false); // Close modal on success
-    } catch (error: any) {
-      toast.error(`Failed to save metadata: ${error.message}`);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  if (!vinylItem) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Edit Metadata: {vinylItem.title}</DialogTitle>
+          <DialogTitle>
+            {vinylItem ? 'Edit Metadata' : 'Add New Vinyl'}
+          </DialogTitle>
           <DialogDescription>
-            Manually edit fields or search MusicBrainz for metadata.
+            {vinylItem
+              ? `Editing details for ${vinylItem.title}`
+              : 'Manually add a new record to your collection.'}
           </DialogDescription>
         </DialogHeader>
-
-        <div className="flex-grow overflow-y-auto pr-2 space-y-4">
-          {/* Manual Edit Form Fields */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="title">Track/Album Title</Label>
+              <Label htmlFor="title">Title</Label>
               <Input
                 id="title"
                 name="title"
                 value={formData.title || ''}
-                onChange={handleInputChange}
+                onChange={handleChange}
+                required
               />
             </div>
             <div>
-              <Label htmlFor="artist_main">Main Artist</Label>
+              <Label htmlFor="artist_main">Artist</Label>
               <Input
                 id="artist_main"
                 name="artist_main"
                 value={formData.artist_main || ''}
-                onChange={handleInputChange}
+                onChange={handleChange}
+                required
               />
             </div>
-            <div>
-              <Label htmlFor="release_title">
-                Release Title (if different)
-              </Label>
-              <Input
-                id="release_title"
-                name="release_title"
-                value={formData.release_title || ''}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <Label htmlFor="year">Year</Label>
-              <Input
-                id="year"
-                name="year"
-                type="number"
-                value={formData.year || ''}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <Label htmlFor="genres">Genres (comma-separated)</Label>
-              <Input
-                id="genres"
-                name="genres"
-                value={(formData.genres || []).join(', ')}
-                onChange={handleInputChange}
-              />
-            </div>
-            {/* Add more fields like notes, custom_tags, etc. */}
-            {/* For structured fields like labels, formats, tracklist, more complex UI is needed */}
+          </div>
+          {/* ... other form fields ... */}
+          <div>
+            <Label htmlFor="genres">Genres (comma-separated)</Label>
+            <Input 
+              id="genres" 
+              name="genres" 
+              value={Array.isArray(formData.genres) ? formData.genres.join(', ') : ''} 
+              onChange={handleGenreChange} 
+            />
           </div>
 
-          {/* MusicBrainz Search Section */}
-          <div className="space-y-2 pt-4 border-t">
-            <h3 className="text-lg font-semibold">MusicBrainz Search</h3>
-            <div className="flex gap-2 items-end">
-              <div className="flex-grow">
-                <Label htmlFor="mbSearch">
-                  Search Term (e.g., Artist Album)
-                </Label>
-                <Input
-                  id="mbSearch"
-                  value={mbSearchQuery}
-                  onChange={(e) => setMbSearchQuery(e.target.value)}
-                  placeholder="e.g., Nirvana Nevermind"
-                />
-              </div>
-              <Button
-                onClick={() => handleMusicBrainzSearch('release')}
-                disabled={isLoadingMb || !mbSearchQuery.trim()}
-              >
-                {isLoadingMb && <LoadingSpinner className="mr-2 h-4 w-4" />}{' '}
-                Search Releases
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button" variant="outline">
+                Cancel
               </Button>
-              {/* <Button onClick={() => handleMusicBrainzSearch('recording')} disabled={isLoadingMb || !mbSearchQuery.trim()}>Search Recordings</Button> */}
-            </div>
-
-            {isLoadingMb && <LoadingSpinner className="mx-auto my-4 h-6 w-6" />}
-
-            {mbReleaseResults.length > 0 && (
-              <div className="mt-2 space-y-2 max-h-60 overflow-y-auto border rounded-md p-2">
-                <h4 className="text-sm font-medium">Found Releases:</h4>
-                {mbReleaseResults.map((release) => (
-                  <div
-                    key={release.id}
-                    className="p-2 border-b hover:bg-muted/50 cursor-pointer"
-                    onClick={() => applyMusicBrainzRelease(release)}
-                  >
-                    <p className="font-semibold">
-                      {release.title}{' '}
-                      {release.disambiguation
-                        ? `(${release.disambiguation})`
-                        : ''}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {release['artist-credit']
-                        ?.map((ac) => ac.name)
-                        .join(', ')}{' '}
-                      ({release.date?.substring(0, 4)})
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {release.country} -{' '}
-                      {release.media?.map((m) => m.format).join('/')} -{' '}
-                      {release['track-count']} tracks
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-            {/* TODO: Display Recording Results if implemented */}
-          </div>
-        </div>
-
-        <DialogFooter className="mt-auto pt-4 border-t">
-          <DialogClose asChild>
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+            </DialogClose>
+            <Button type="submit" disabled={isSearchingMb || isFetchingDetails}>
+              {isFetchingDetails ? <LoadingSpinner /> : 'Save Changes'}
             </Button>
-          </DialogClose>
-          <Button onClick={handleSubmit} disabled={isSaving || isLoadingMb}>
-            {isSaving && <LoadingSpinner className="mr-2 h-4 w-4" />} Save
-            Changes
-          </Button>
-        </DialogFooter>
+          </DialogFooter>
+        </form>
+
+        {/* MusicBrainz Search Section */}
+        <div className="mt-6 pt-6 border-t">
+          <h3 className="text-lg font-semibold mb-2">
+            Search MusicBrainz & Apply Data
+          </h3>
+          <form
+            onSubmit={handleMusicBrainzSearch}
+            className="flex items-center gap-2 mb-4"
+          >
+            <Input
+              type="text"
+              value={mbSearchQuery}
+              onChange={(e) => setMbSearchQuery(e.target.value)}
+              placeholder="Search MusicBrainz (e.g., Artist Album)"
+              className="flex-grow"
+            />
+            <Button type="submit" variant="secondary" disabled={isSearchingMb}>
+              {isSearchingMb ? <LoadingSpinner /> : 'Search'}
+            </Button>
+          </form>
+          {isFetchingDetails && <LoadingSpinner className="my-2 mx-auto" />}
+          {mbReleaseResults.length > 0 && (
+            <ScrollArea className="h-[200px] border rounded-md p-2">
+              <ul className="space-y-2">
+                {mbReleaseResults.map((mbRelease) => (
+                  <li key={mbRelease.id} className="text-sm p-2 border-b last:border-b-0">
+                    <div>
+                      <strong>{mbRelease.title}</strong> by{' '}
+                      {mbRelease['artist-credit']?.map((ac) => ac.name).join(', ')}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {mbRelease.date} ({mbRelease.country}) - Status: {mbRelease.status}
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="link"
+                      className="p-0 h-auto mt-1"
+                      onClick={() => handleApplyMusicBrainzData(mbRelease.id)}
+                      disabled={isFetchingDetails}
+                    >
+                      Apply this data
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </ScrollArea>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );
-};
-
-export default EditMetadataModal;
+}
