@@ -5,7 +5,7 @@ import { SpotifyPlayerProvider } from '@/components/providers/SpotifyPlayerProvi
 import { AppleMusicProvider } from '@/components/providers/AppleMusicProvider';
 import { SpotifyPlayer } from '@/components/player/SpotifyPlayer'; // Import the player UI
 import { Toaster } from '@/components/ui/sonner'; // Assuming you might want toast notifications
-import { ThemeProvider } from '@/components/theme-provider';
+import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { cn } from '@/lib/utils';
 import { Inter as FontSans } from 'next/font/google';
 
