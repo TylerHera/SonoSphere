@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ListMusic } from 'lucide-react';
 
 export const QueueDisplay: React.FC = () => {
-  const { playerState } = useSpotifyPlayer(); 
+  const { playerState } = useSpotifyPlayer();
   // Accessing playerState directly from a hypothetical, more detailed context if needed
   // For now, let's assume track_window is available from the basic playerState.currentTrack or similar
   // const { track_window } = playerState; // This would be from a more detailed Spotify.PlaybackState
@@ -19,7 +19,7 @@ export const QueueDisplay: React.FC = () => {
   const currentTrack = playerState.currentTrack;
   // const nextTracks = playerState.track_window?.next_tracks || []; // This is illustrative
   // const previousTracks = playerState.track_window?.previous_tracks || [];
-  
+
   // For a real queue, you would fetch `https://api.spotify.com/v1/me/player/queue`
   // This requires additional state management and API calls.
 
@@ -37,12 +37,13 @@ export const QueueDisplay: React.FC = () => {
       <h3 className="text-lg font-semibold mb-2 px-3">Up Next</h3>
       <ScrollArea className="h-[200px] w-full">
         <div className="p-3 space-y-2">
-            {/* This is a placeholder. Real queue data would be mapped here */}
-            <p className="text-sm text-muted-foreground p-2 border rounded">
-                Queue functionality (viewing next tracks, drag-and-drop) will be implemented later.
-            </p>
-            {/* Example of how one might list next tracks if available from SDK state */}
-            {/* {nextTracks.length > 0 ? nextTracks.map((track, index) => (
+          {/* This is a placeholder. Real queue data would be mapped here */}
+          <p className="text-sm text-muted-foreground p-2 border rounded">
+            Queue functionality (viewing next tracks, drag-and-drop) will be
+            implemented later.
+          </p>
+          {/* Example of how one might list next tracks if available from SDK state */}
+          {/* {nextTracks.length > 0 ? nextTracks.map((track, index) => (
                 <div key={track.uri + index} className="p-2 border rounded hover:bg-muted">
                     <p className="text-sm font-medium truncate">{track.name}</p>
                     <p className="text-xs text-muted-foreground truncate">
@@ -53,14 +54,14 @@ export const QueueDisplay: React.FC = () => {
                 <p className="text-sm text-muted-foreground p-2">
                     No tracks in the up next queue.
                 </p>
-            )} */} 
+            )} */}
         </div>
       </ScrollArea>
       <div className="mt-2 px-3">
         <Button variant="outline" size="sm" className="w-full" disabled>
-            Manage Queue (Coming Soon)
+          Manage Queue (Coming Soon)
         </Button>
       </div>
     </div>
   );
-}; 
+};

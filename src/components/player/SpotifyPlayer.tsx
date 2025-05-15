@@ -5,7 +5,7 @@ import { useSpotifyPlayer } from '@/components/providers/SpotifyPlayerProvider';
 import { NowPlayingDisplay } from './NowPlayingDisplay';
 import { SpotifyPlayerControls } from './SpotifyPlayerControls';
 import { QueueDisplay } from './QueueDisplay';
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Sheet,
   SheetContent,
@@ -13,7 +13,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
+} from '@/components/ui/sheet';
 import { ListOrdered } from 'lucide-react';
 
 export const SpotifyPlayer: React.FC = () => {
@@ -28,7 +28,7 @@ export const SpotifyPlayer: React.FC = () => {
     // For instance, if !spotifyAuthenticated, prompt to connect Spotify.
     // If !isReady, it might be initializing.
     // If !deviceId, player is not available on this device yet.
-    return null; 
+    return null;
   }
 
   return (
@@ -61,4 +61,4 @@ export const SpotifyPlayer: React.FC = () => {
       </div>
     </div>
   );
-}; 
+};

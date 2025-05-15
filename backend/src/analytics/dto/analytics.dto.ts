@@ -41,70 +41,70 @@ export interface TopTracksResponseDto {
 }
 
 export interface LastFmAlbumStats {
+  name: string;
+  playcount: string;
+  mbid?: string;
+  url: string;
+  artist: {
     name: string;
-    playcount: string;
     mbid?: string;
     url: string;
-    artist: {
-        name: string;
-        mbid?: string;
-        url: string;
-    };
-    image?: LastFmImage[];
+  };
+  image?: LastFmImage[];
 }
 
 export interface TopAlbumsResponseDto {
-    albums: LastFmAlbumStats[];
-    total: number;
-    page: number;
-    perPage: number;
-    totalPages: number;
+  albums: LastFmAlbumStats[];
+  total: number;
+  page: number;
+  perPage: number;
+  totalPages: number;
 }
 
 // DTOs for Weekly Charts
 export interface LastFmWeeklyTrack {
-    name: string;
-    artist: { '#text': string; mbid?: string };
-    mbid?: string;
-    playcount: string;
-    url: string;
-    image?: LastFmImage[];
-    '@attr': { rank: string };
+  name: string;
+  artist: { '#text': string; mbid?: string };
+  mbid?: string;
+  playcount: string;
+  url: string;
+  image?: LastFmImage[];
+  '@attr': { rank: string };
 }
 
 export interface WeeklyTrackChartResponseDto {
-    tracks: LastFmWeeklyTrack[];
-    from: string; // Timestamp
-    to: string;   // Timestamp
+  tracks: LastFmWeeklyTrack[];
+  from: string; // Timestamp
+  to: string; // Timestamp
 }
 
 export interface LastFmWeeklyArtist {
-    name: string;
-    mbid?: string;
-    playcount: string;
-    url: string;
-    image?: LastFmImage[]; // Note: Last.fm API docs don't explicitly show images for weekly artist chart items
-    '@attr': { rank: string };
+  name: string;
+  mbid?: string;
+  playcount: string;
+  url: string;
+  image?: LastFmImage[]; // Note: Last.fm API docs don't explicitly show images for weekly artist chart items
+  '@attr': { rank: string };
 }
 
 export interface WeeklyArtistChartResponseDto {
-    artists: LastFmWeeklyArtist[];
-    from: string;
-    to: string;
+  artists: LastFmWeeklyArtist[];
+  from: string;
+  to: string;
 }
 
 export interface LastFmWeeklyAlbum {
-    name: string;
-    artist: { '#text': string; mbid?: string };
-    mbid?: string;
-    playcount: string;
-    url: string;
-    image?: LastFmImage[];
-    '@attr': { rank: string };
+  name: string;
+  artist: { '#text': string; mbid?: string };
+  mbid?: string;
+  playcount: string;
+  url: string;
+  image?: LastFmImage[];
+  '@attr': { rank: string };
 }
 
 export interface WeeklyAlbumChartResponseDto {
-    albums: LastFmWeeklyAlbum[];
-    from: string;
-    to: string;
-} 
+  albums: LastFmWeeklyAlbum[];
+  from: string;
+  to: string;
+}

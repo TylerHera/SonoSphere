@@ -17,12 +17,12 @@ module.exports = {
     jest: true, // Adds all of the Jest testing global variables.
   },
   ignorePatterns: [
-    '.eslintrc.js', 
+    '.eslintrc.js',
     'dist/**', // Ignore the build output directory
-    'node_modules/**' // Standard ignore
+    'node_modules/**', // Standard ignore
   ],
   rules: {
-    // Override or add rules settings here. 
+    // Override or add rules settings here.
     // Example: Turning off rules that might be too strict during initial development.
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
@@ -30,4 +30,4 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
   },
-}; 
+};

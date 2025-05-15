@@ -3,8 +3,12 @@ import { AnalyticsService } from './analytics.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import {
-  TopArtistsResponseDto, TopTracksResponseDto, TopAlbumsResponseDto,
-  WeeklyTrackChartResponseDto, WeeklyArtistChartResponseDto, WeeklyAlbumChartResponseDto
+  TopArtistsResponseDto,
+  TopTracksResponseDto,
+  TopAlbumsResponseDto,
+  WeeklyTrackChartResponseDto,
+  WeeklyArtistChartResponseDto,
+  WeeklyAlbumChartResponseDto,
 } from './dto/analytics.dto';
 
 // Define available periods for Last.fm API
@@ -61,7 +65,7 @@ export class AnalyticsController {
   async getWeeklyTrackChart(
     @CurrentUser('userId') userId: string,
     @Query('from') from?: string, // Optional: UNIX timestamp
-    @Query('to') to?: string,     // Optional: UNIX timestamp
+    @Query('to') to?: string, // Optional: UNIX timestamp
   ): Promise<WeeklyTrackChartResponseDto> {
     return this.analyticsService.getWeeklyTrackChart(userId, from, to);
   }
@@ -83,4 +87,4 @@ export class AnalyticsController {
   ): Promise<WeeklyAlbumChartResponseDto> {
     return this.analyticsService.getWeeklyAlbumChart(userId, from, to);
   }
-} 
+}

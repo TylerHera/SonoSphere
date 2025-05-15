@@ -79,12 +79,11 @@ declare namespace LastFM {
     album: NowPlayingTrackInfo;
     albumArtist: NowPlayingTrackInfo;
     track: NowPlayingTrackInfo;
-    ignoredMessage: { code: string; '#text': string; };
+    ignoredMessage: { code: string; '#text': string };
   }
   interface UpdateNowPlayingResponse {
     nowplaying: NowPlayingScrobbles;
   }
-
 
   // Scrobble response types
   interface Scrobble {
@@ -93,7 +92,7 @@ declare namespace LastFM {
     album: NowPlayingTrackInfo;
     albumArtist: NowPlayingTrackInfo;
     timestamp: string;
-    ignoredMessage: { code: string; '#text': string; };
+    ignoredMessage: { code: string; '#text': string };
   }
 
   interface ScrobblesInfoAttr {
@@ -103,7 +102,7 @@ declare namespace LastFM {
 
   interface ScrobblesInfo {
     scrobble: Scrobble[]; // For batch, this is an array. For single, it might be an object.
-                          // Assuming it can be an array even for one for consistency from API docs.
+    // Assuming it can be an array even for one for consistency from API docs.
     '@attr': ScrobblesInfoAttr;
   }
 
@@ -113,4 +112,4 @@ declare namespace LastFM {
 
   // General type for API responses that might be an error
   type ApiResponse<T> = T | ErrorResponse;
-} 
+}

@@ -9,11 +9,14 @@ interface RequestParams {
 }
 
 // Function to generate API signature
-const generateApiSignature = (params: Record<string, string | number>): string => {
+const generateApiSignature = (
+  params: Record<string, string | number>,
+): string => {
   const keys = Object.keys(params).sort();
   let sigString = '';
-  keys.forEach(key => {
-    if (key !== 'format' && key !== 'callback') { // format & callback are not part of sig
+  keys.forEach((key) => {
+    if (key !== 'format' && key !== 'callback') {
+      // format & callback are not part of sig
       sigString += key + params[key];
     }
   });
@@ -24,11 +27,14 @@ const generateApiSignature = (params: Record<string, string | number>): string =
 const lastfmApiRequest = async <T = any>(
   params: RequestParams,
   isSigned: boolean = false,
-  httpMethod: 'GET' | 'POST' = 'GET'
+  httpMethod: 'GET' | 'POST' = 'GET',
 ): Promise<T | LastFM.ErrorResponse> => {
   if (!API_KEY || (isSigned && !SHARED_SECRET)) {
     console.error('Last.fm API Key or Shared Secret not configured.');
-    return { error: 0, message: 'API credentials not configured' } as LastFM.ErrorResponse;
+    return {
+      error: 0,
+      message: 'API credentials not configured',
+    } as LastFM.ErrorResponse;
   }
 
   const allParams: RequestParams = {
@@ -38,8 +44,11 @@ const lastfmApiRequest = async <T = any>(
   };
 
   if (isSigned && !allParams.method) {
-      console.error('Method is required for signed Last.fm API calls.');
-      return { error: 0, message: 'Method required for signing' } as LastFM.ErrorResponse;
+    console.error('Method is required for signed Last.fm API calls.');
+    return {
+      error: 0,
+      message: 'Method required for signing',
+    } as LastFM.ErrorResponse;
   }
 
   const searchParams = new URLSearchParams();
@@ -59,13 +68,21 @@ const lastfmApiRequest = async <T = any>(
         },
         body: searchParams.toString(),
       });
-    } else { // GET
+    } else {
+      // GET
       response = await fetch(`${API_BASE_URL}?${searchParams.toString()}`);
     }
 
     if (!response.ok) {
-      console.error('Last.fm API Error:', response.status, await response.text());
-      return { error: response.status, message: `HTTP error! status: ${response.status}` } as LastFM.ErrorResponse;
+      console.error(
+        'Last.fm API Error:',
+        response.status,
+        await response.text(),
+      );
+      return {
+        error: response.status,
+        message: `HTTP error! status: ${response.status}`,
+      } as LastFM.ErrorResponse;
     }
     const data = await response.json();
     if (data.error) {
@@ -75,7 +92,10 @@ const lastfmApiRequest = async <T = any>(
     return data as T;
   } catch (error) {
     console.error('Last.fm API request failed:', error);
-    return { error: 0, message: 'Network or parsing error' } as LastFM.ErrorResponse;
+    return {
+      error: 0,
+      message: 'Network or parsing error',
+    } as LastFM.ErrorResponse;
   }
 };
 
@@ -89,13 +109,18 @@ export const getAuthorizationUrl = (callbackUrl: string): string => {
   return `https://www.last.fm/api/auth/?api_key=${API_KEY}&cb=${encodeURIComponent(callbackUrl)}`;
 };
 
-
 // Step 2 of auth: Get a session using the token granted after user authorization
-export const getSession = async (token: string): Promise<LastFM.SessionResponse | LastFM.ErrorResponse> => {
-  return lastfmApiRequest<LastFM.SessionResponse>({ 
-    method: 'auth.getSession', 
-    token 
-  }, true, 'POST');
+export const getSession = async (
+  token: string,
+): Promise<LastFM.SessionResponse | LastFM.ErrorResponse> => {
+  return lastfmApiRequest<LastFM.SessionResponse>(
+    {
+      method: 'auth.getSession',
+      token,
+    },
+    true,
+    'POST',
+  );
 };
 
 // Scrobbling API methods
@@ -105,7 +130,7 @@ export const updateNowPlaying = async (
   sessionKey: string,
   album?: string,
   albumArtist?: string,
-  duration?: number
+  duration?: number,
 ): Promise<LastFM.UpdateNowPlayingResponse | LastFM.ErrorResponse> => {
   const params: Record<string, string | number> = {
     method: 'track.updateNowPlaying',
@@ -117,7 +142,11 @@ export const updateNowPlaying = async (
   if (albumArtist) params.albumArtist = albumArtist;
   if (duration) params.duration = duration;
 
-  return lastfmApiRequest<LastFM.UpdateNowPlayingResponse>(params, true, 'POST');
+  return lastfmApiRequest<LastFM.UpdateNowPlayingResponse>(
+    params,
+    true,
+    'POST',
+  );
 };
 
 export const scrobbleTrack = async (
@@ -127,7 +156,7 @@ export const scrobbleTrack = async (
   sessionKey: string,
   album?: string,
   albumArtist?: string,
-  duration?: number
+  duration?: number,
 ): Promise<LastFM.ScrobbleResponse | LastFM.ErrorResponse> => {
   const params: Record<string, string | number> = {
     method: 'track.scrobble',
@@ -150,7 +179,7 @@ export const getUserRecentTracks = async (
   user: string,
   limit: number = 20,
   page: number = 1,
-  extended: 0 | 1 = 0 // 0 for no extended data, 1 for extended data (album, artist images)
+  extended: 0 | 1 = 0, // 0 for no extended data, 1 for extended data (album, artist images)
 ): Promise<LastFM.RecentTracksResponse | LastFM.ErrorResponse> => {
   return lastfmApiRequest<LastFM.RecentTracksResponse>({
     method: 'user.getRecentTracks',

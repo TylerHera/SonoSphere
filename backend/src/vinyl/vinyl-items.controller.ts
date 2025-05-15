@@ -38,7 +38,8 @@ export class VinylItemsController {
     @Query('page', new ParseIntPipe({ optional: true })) page?: number,
     @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
     @Query('search') search?: string,
-    @Query('status', new ParseEnumPipe(CollectionItemStatusDto, { optional: true })) status?: CollectionItemStatusDto,
+    @Query('status', new ParseEnumPipe(CollectionItemStatusDto, { optional: true }))
+    status?: CollectionItemStatusDto,
     @Query('genre') genre?: string,
     @Query('sortBy') sortBy?: string,
     @Query('sortOrder') sortOrder?: 'asc' | 'desc',
@@ -49,7 +50,18 @@ export class VinylItemsController {
       `Fetching vinyl items for user: ${userId}, page: ${page || 1}, limit: ${limit || 20}, search: ${search}, status: ${status}, genre: ${genre}, sortBy: ${sortBy}, sortOrder: ${sortOrder}, tags: ${tags}, folder: ${folder}`,
     );
     const mappedStatus = status as unknown as CollectionItemStatus;
-    return this.vinylItemsService.findAll(userId, page || 1, limit || 20, search, mappedStatus, genre, sortBy, sortOrder, tags, folder);
+    return this.vinylItemsService.findAll(
+      userId,
+      page || 1,
+      limit || 20,
+      search,
+      mappedStatus,
+      genre,
+      sortBy,
+      sortOrder,
+      tags,
+      folder,
+    );
   }
 
   @Get(':id')

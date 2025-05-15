@@ -4,7 +4,16 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogClose,
+} from '@/components/ui/dialog';
 import { scrobbleTrack as lastfmScrobbleTrack } from '@/lib/api/lastfm';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { createClient } from '@/lib/supabase/client';
@@ -15,13 +24,22 @@ interface ManualScrobbleFormProps {
   onScrobbleSubmitted?: () => void; // Callback to refresh scrobble list
 }
 
-export function ManualScrobbleForm({ lastfmSessionKey, onScrobbleSubmitted }: ManualScrobbleFormProps) {
+export function ManualScrobbleForm({
+  lastfmSessionKey,
+  onScrobbleSubmitted,
+}: ManualScrobbleFormProps) {
   const [artist, setArtist] = useState('');
   const [track, setTrack] = useState('');
   const [album, setAlbum] = useState('');
-  const [timestamp, setTimestamp] = useState<number>(Math.floor(Date.now() / 1000)); // Unix timestamp in seconds
-  const [customDate, setCustomDate] = useState<string>(new Date().toISOString().split('T')[0]);
-  const [customTime, setCustomTime] = useState<string>(new Date().toTimeString().slice(0,5));
+  const [timestamp, setTimestamp] = useState<number>(
+    Math.floor(Date.now() / 1000),
+  ); // Unix timestamp in seconds
+  const [customDate, setCustomDate] = useState<string>(
+    new Date().toISOString().split('T')[0],
+  );
+  const [customTime, setCustomTime] = useState<string>(
+    new Date().toTimeString().slice(0, 5),
+  );
 
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,11 +47,13 @@ export function ManualScrobbleForm({ lastfmSessionKey, onScrobbleSubmitted }: Ma
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!lastfmSessionKey) {
-      toast.error("Last.fm session key not found. Please reconnect in settings.");
+      toast.error(
+        'Last.fm session key not found. Please reconnect in settings.',
+      );
       return;
     }
     if (!artist || !track) {
-      toast.error("Artist and Track are required.");
+      toast.error('Artist and Track are required.');
       return;
     }
 
@@ -41,12 +61,14 @@ export function ManualScrobbleForm({ lastfmSessionKey, onScrobbleSubmitted }: Ma
 
     // Combine date and time for timestamp
     const dateTimeString = `${customDate}T${customTime}:00`;
-    const selectedTimestamp = Math.floor(new Date(dateTimeString).getTime() / 1000);
-    
+    const selectedTimestamp = Math.floor(
+      new Date(dateTimeString).getTime() / 1000,
+    );
+
     if (isNaN(selectedTimestamp)) {
-        toast.error("Invalid date or time provided.");
-        setIsSubmitting(false);
-        return;
+      toast.error('Invalid date or time provided.');
+      setIsSubmitting(false);
+      return;
     }
 
     const response = await lastfmScrobbleTrack(
@@ -70,25 +92,28 @@ export function ManualScrobbleForm({ lastfmSessionKey, onScrobbleSubmitted }: Ma
       }
       setIsOpen(false); // Close dialog on success
     } else if (response.scrobbles['@attr'].ignored > 0) {
-        const ignoredReason = response.scrobbles.scrobble[0]?.ignoredmessage?.['#text'] || 'Track ignored by Last.fm';
-        toast.warning(`Scrobble ignored: ${ignoredReason}`);
+      const ignoredReason =
+        response.scrobbles.scrobble[0]?.ignoredmessage?.['#text'] ||
+        'Track ignored by Last.fm';
+      toast.warning(`Scrobble ignored: ${ignoredReason}`);
     } else {
-        toast.warning("Scrobble submitted, but Last.fm response unclear.");
+      toast.warning('Scrobble submitted, but Last.fm response unclear.');
     }
     setIsSubmitting(false);
   };
-  
+
   const handleOpenChange = (open: boolean) => {
     if (isSubmitting) return; // Prevent closing while submitting
     setIsOpen(open);
-    if (!open) { // Reset form on close if not submitting
-        setArtist('');
-        setTrack('');
-        setAlbum('');
-        setCustomDate(new Date().toISOString().split('T')[0]);
-        setCustomTime(new Date().toTimeString().slice(0,5));
+    if (!open) {
+      // Reset form on close if not submitting
+      setArtist('');
+      setTrack('');
+      setAlbum('');
+      setCustomDate(new Date().toISOString().split('T')[0]);
+      setCustomTime(new Date().toTimeString().slice(0, 5));
     }
-  }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
@@ -99,7 +124,8 @@ export function ManualScrobbleForm({ lastfmSessionKey, onScrobbleSubmitted }: Ma
         <DialogHeader>
           <DialogTitle>Add Manual Scrobble</DialogTitle>
           <DialogDescription>
-            Manually add a track you listened to. Fields marked with * are required.
+            Manually add a track you listened to. Fields marked with * are
+            required.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -168,7 +194,9 @@ export function ManualScrobbleForm({ lastfmSessionKey, onScrobbleSubmitted }: Ma
           </div>
           <DialogFooter>
             <DialogClose asChild>
-                 <Button type="button" variant="outline" disabled={isSubmitting}>Cancel</Button>
+              <Button type="button" variant="outline" disabled={isSubmitting}>
+                Cancel
+              </Button>
             </DialogClose>
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? 'Submitting...' : 'Submit Scrobble'}
@@ -178,4 +206,4 @@ export function ManualScrobbleForm({ lastfmSessionKey, onScrobbleSubmitted }: Ma
       </DialogContent>
     </Dialog>
   );
-} 
+}

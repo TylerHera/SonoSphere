@@ -1,11 +1,22 @@
 import Link from 'next/link';
 import { signIn, signInWithSpotify } from '@/app/(auth)/actions';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-export default function LoginPage({ searchParams }: { searchParams: { error?: string } }) {
+export default function LoginPage({
+  searchParams,
+}: {
+  searchParams: { error?: string };
+}) {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
       <Card className="w-full max-w-md">
@@ -24,15 +35,23 @@ export default function LoginPage({ searchParams }: { searchParams: { error?: st
           <form action={signIn} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" placeholder="m@example.com" required />
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="m@example.com"
+                required
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input id="password" name="password" type="password" required />
             </div>
-            <Button type="submit" className="w-full">Login with Email</Button>
+            <Button type="submit" className="w-full">
+              Login with Email
+            </Button>
           </form>
-          
+
           <div className="relative my-4">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />
@@ -50,7 +69,6 @@ export default function LoginPage({ searchParams }: { searchParams: { error?: st
               Login with Spotify
             </Button>
           </form>
-          
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">
           <Button variant="outline" className="w-full" disabled>
@@ -66,4 +84,4 @@ export default function LoginPage({ searchParams }: { searchParams: { error?: st
       </Card>
     </div>
   );
-} 
+}

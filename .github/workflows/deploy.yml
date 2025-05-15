@@ -1,8 +1,8 @@
-# Placeholder for deploy workflow 
+# Placeholder for deploy workflow
 name: Deploy
 on: [push]
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Deploying" 
+      - run: echo "Deploying"

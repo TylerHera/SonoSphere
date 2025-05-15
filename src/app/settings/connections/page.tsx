@@ -2,11 +2,17 @@
 
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { getAuthorizationUrl as getLastfmAuthUrl } from '@/lib/api/lastfm';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { createClient } from '@/lib/supabase/client';
-import { toast } from "sonner";
+import { toast } from 'sonner';
 
 export default function ConnectionsPage() {
   const { user, session } = useAuth();
@@ -28,9 +34,10 @@ export default function ConnectionsPage() {
         if (data && data.lastfm_session_key) {
           setLastfmSessionKey(data.lastfm_session_key);
         }
-        if (error && error.code !== 'PGRST116') { // PGRST116: no rows found
-            console.error("Error fetching lastfm session key:", error);
-            toast.error("Could not check Last.fm connection.")
+        if (error && error.code !== 'PGRST116') {
+          // PGRST116: no rows found
+          console.error('Error fetching lastfm session key:', error);
+          toast.error('Could not check Last.fm connection.');
         }
       }
       setIsLoadingLastfm(false);
@@ -42,27 +49,27 @@ export default function ConnectionsPage() {
     const callbackUrl = process.env.NEXT_PUBLIC_LASTFM_CALLBACK_URL;
     if (!callbackUrl) {
       console.error('Last.fm callback URL not configured.');
-      toast.error("Last.fm callback URL not configured.");
+      toast.error('Last.fm callback URL not configured.');
       return;
     }
     window.location.href = getLastfmAuthUrl(callbackUrl);
   };
-  
+
   const handleDisconnectLastfm = async () => {
     if (!user) return;
     setIsLoadingLastfm(true);
     const supabase = createClient();
     const { error } = await supabase
-        .from('profiles')
-        .update({ lastfm_session_key: null })
-        .eq('id', user.id);
+      .from('profiles')
+      .update({ lastfm_session_key: null })
+      .eq('id', user.id);
 
     if (error) {
-        console.error("Error disconnecting Last.fm:", error);
-        toast.error("Failed to disconnect Last.fm.");
+      console.error('Error disconnecting Last.fm:', error);
+      toast.error('Failed to disconnect Last.fm.');
     } else {
-        setLastfmSessionKey(null);
-        toast.success("Disconnected from Last.fm.");
+      setLastfmSessionKey(null);
+      toast.success('Disconnected from Last.fm.');
     }
     setIsLoadingLastfm(false);
   };
@@ -83,7 +90,9 @@ export default function ConnectionsPage() {
           ) : lastfmSessionKey ? (
             <div className="flex items-center justify-between">
               <p className="text-green-600">Connected to Last.fm</p>
-              <Button variant="destructive" onClick={handleDisconnectLastfm}>Disconnect</Button>
+              <Button variant="destructive" onClick={handleDisconnectLastfm}>
+                Disconnect
+              </Button>
             </div>
           ) : (
             <Button onClick={handleConnectLastfm}>Connect to Last.fm</Button>
@@ -93,4 +102,4 @@ export default function ConnectionsPage() {
       {/* Add more service connections here, e.g., Spotify if needed for other things */}
     </div>
   );
-} 
+}

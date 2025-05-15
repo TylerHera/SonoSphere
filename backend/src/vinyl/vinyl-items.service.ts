@@ -41,8 +41,8 @@ export class VinylItemsService {
   }
 
   async findAll(
-    userId: string, 
-    page: number = 1, 
+    userId: string,
+    page: number = 1,
     limit: number = 20,
     search?: string,
     status?: CollectionItemStatus, // Uses Prisma's CollectionItemStatus
@@ -74,13 +74,16 @@ export class VinylItemsService {
     }
 
     if (tags) {
-      const tagsArray = tags.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+      const tagsArray = tags
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter((tag) => tag !== '');
       if (tagsArray.length > 0) {
         whereClause.custom_tags = { hasSome: tagsArray };
       }
     }
 
-    if (folder) { 
+    if (folder) {
       whereClause.folder = folder;
     }
 
@@ -140,26 +143,33 @@ export class VinylItemsService {
 
     // List all fields from UpdateVinylItemDto that can be updated
     if (updateVinylItemDto.title !== undefined) dataToUpdate.title = updateVinylItemDto.title;
-    if (updateVinylItemDto.artist_main !== undefined) dataToUpdate.artist_main = updateVinylItemDto.artist_main;
-    if (updateVinylItemDto.discogs_id !== undefined) dataToUpdate.discogs_id = updateVinylItemDto.discogs_id;
-    if (updateVinylItemDto.artists_extra !== undefined) dataToUpdate.artists_extra = updateVinylItemDto.artists_extra;
-    if (updateVinylItemDto.release_title !== undefined) dataToUpdate.release_title = updateVinylItemDto.release_title;
+    if (updateVinylItemDto.artist_main !== undefined)
+      dataToUpdate.artist_main = updateVinylItemDto.artist_main;
+    if (updateVinylItemDto.discogs_id !== undefined)
+      dataToUpdate.discogs_id = updateVinylItemDto.discogs_id;
+    if (updateVinylItemDto.artists_extra !== undefined)
+      dataToUpdate.artists_extra = updateVinylItemDto.artists_extra;
+    if (updateVinylItemDto.release_title !== undefined)
+      dataToUpdate.release_title = updateVinylItemDto.release_title;
     if (updateVinylItemDto.year !== undefined) dataToUpdate.year = updateVinylItemDto.year;
     if (updateVinylItemDto.formats !== undefined) dataToUpdate.formats = updateVinylItemDto.formats;
     if (updateVinylItemDto.labels !== undefined) dataToUpdate.labels = updateVinylItemDto.labels;
     if (updateVinylItemDto.genres !== undefined) dataToUpdate.genres = updateVinylItemDto.genres;
     if (updateVinylItemDto.styles !== undefined) dataToUpdate.styles = updateVinylItemDto.styles;
-    if (updateVinylItemDto.cover_url_small !== undefined) dataToUpdate.cover_url_small = updateVinylItemDto.cover_url_small;
-    if (updateVinylItemDto.cover_url_large !== undefined) dataToUpdate.cover_url_large = updateVinylItemDto.cover_url_large;
+    if (updateVinylItemDto.cover_url_small !== undefined)
+      dataToUpdate.cover_url_small = updateVinylItemDto.cover_url_small;
+    if (updateVinylItemDto.cover_url_large !== undefined)
+      dataToUpdate.cover_url_large = updateVinylItemDto.cover_url_large;
     if (updateVinylItemDto.notes !== undefined) dataToUpdate.notes = updateVinylItemDto.notes;
-    if (updateVinylItemDto.custom_tags !== undefined) dataToUpdate.custom_tags = updateVinylItemDto.custom_tags;
+    if (updateVinylItemDto.custom_tags !== undefined)
+      dataToUpdate.custom_tags = updateVinylItemDto.custom_tags;
     if (updateVinylItemDto.status !== undefined) dataToUpdate.status = updateVinylItemDto.status;
     if (updateVinylItemDto.folder !== undefined) dataToUpdate.folder = updateVinylItemDto.folder; // Added folder
 
     // Prevent attempting to update with an empty object if no valid fields were passed
     if (Object.keys(dataToUpdate).length === 0) {
-        // Optionally, could return the item as is, or throw a BadRequestException
-        return this.findOne(userId, id); // Return existing item if no changes
+      // Optionally, could return the item as is, or throw a BadRequestException
+      return this.findOne(userId, id); // Return existing item if no changes
     }
 
     return this.prisma.vinylItem.update({

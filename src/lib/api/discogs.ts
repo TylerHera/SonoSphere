@@ -21,7 +21,12 @@ export interface DiscogsRelease {
   tracklist?: { position: string; title: string; duration: string }[];
   notes?: string;
   labels?: { name: string; catno?: string }[];
-  formats?: { name: string; qty: string; descriptions?: string[]; text?: string }[];
+  formats?: {
+    name: string;
+    qty: string;
+    descriptions?: string[];
+    text?: string;
+  }[];
   uri?: string; // Relative web URI e.g., /Pink-Floyd-The-Dark-Side-Of-The-Moon/master/10362
   resource_url?: string; // API resource URL
   // Add more fields as needed based on Discogs API response
@@ -39,10 +44,15 @@ export interface DiscogsSearchResult {
   results: DiscogsRelease[]; // Search results are usually release-like objects
 }
 
-async function fetchDiscogsAPI<T>(endpoint: string, params?: Record<string, string | number>): Promise<T> {
+async function fetchDiscogsAPI<T>(
+  endpoint: string,
+  params?: Record<string, string | number>,
+): Promise<T> {
   const url = new URL(`${DISCOGS_API_BASE_URL}${endpoint}`);
   if (params) {
-    Object.entries(params).forEach(([key, value]) => url.searchParams.append(key, String(value)));
+    Object.entries(params).forEach(([key, value]) =>
+      url.searchParams.append(key, String(value)),
+    );
   }
 
   const headers: HeadersInit = {
@@ -60,11 +70,18 @@ async function fetchDiscogsAPI<T>(endpoint: string, params?: Record<string, stri
     const response = await fetch(url.toString(), { headers });
 
     if (!response.ok) {
-      const errorData: DiscogsError = await response.json().catch(() => ({ message: response.statusText }));
-      console.error(`Discogs API Error (${response.status}) for ${endpoint}:`, errorData.message);
-      throw new Error(`Discogs API Error: ${errorData.message || response.statusText}`);
+      const errorData: DiscogsError = await response
+        .json()
+        .catch(() => ({ message: response.statusText }));
+      console.error(
+        `Discogs API Error (${response.status}) for ${endpoint}:`,
+        errorData.message,
+      );
+      throw new Error(
+        `Discogs API Error: ${errorData.message || response.statusText}`,
+      );
     }
-    return await response.json() as T;
+    return (await response.json()) as T;
   } catch (error) {
     console.error(`Failed to fetch from Discogs API (${endpoint}):`, error);
     throw error; // Re-throw to be handled by the caller
@@ -98,7 +115,10 @@ export async function searchReleases(searchParams: {
   page?: number;
   per_page?: number;
 }): Promise<DiscogsSearchResult> {
-  return fetchDiscogsAPI<DiscogsSearchResult>('/database/search', { ...searchParams, type: 'release' });
+  return fetchDiscogsAPI<DiscogsSearchResult>('/database/search', {
+    ...searchParams,
+    type: 'release',
+  });
 }
 
 /**
@@ -111,17 +131,17 @@ export async function searchReleases(searchParams: {
  * @param sortOrder Sort direction ('asc' or 'desc').
  * @param userAuthToken User's OAuth access token data (complex object for OAuth 1.0a).
  */
-export async function getUserDiscogsCollection(
-  // discogsUsername: string, 
-  // folderId: number = 0, 
-  // sort: string = 'added', 
-  // sortOrder: string = 'desc',
-  // userAuthToken: any // This will be specific to how OAuth 1.0a token is stored
-): Promise<any> { // Replace 'any' with a proper CollectionResult type
+export async function getUserDiscogsCollection(): Promise<any> {
+// discogsUsername: string,
+// folderId: number = 0,
+// sort: string = 'added',
+// sortOrder: string = 'desc',
+// userAuthToken: any // This will be specific to how OAuth 1.0a token is stored
+  // Replace 'any' with a proper CollectionResult type
   console.warn(
-    'getUserDiscogsCollection: Not implemented. Requires Discogs OAuth 1.0a user authentication.'
+    'getUserDiscogsCollection: Not implemented. Requires Discogs OAuth 1.0a user authentication.',
   );
   // Example endpoint: /users/{username}/collection/folders/{folder_id}/releases
   // This would use a fetch function that includes OAuth 1.0a headers.
   return Promise.resolve({ pagination: {}, releases: [] }); // Return mock/empty data for now
-} 
+}

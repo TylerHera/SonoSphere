@@ -10,7 +10,10 @@ interface CollectionSearchFormProps {
   placeholder?: string;
 }
 
-export default function CollectionSearchForm({ searchPath = '/collection', placeholder = 'Search Discogs for releases...' }: CollectionSearchFormProps) {
+export default function CollectionSearchForm({
+  searchPath = '/collection',
+  placeholder = 'Search Discogs for releases...',
+}: CollectionSearchFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('query') || '');
@@ -38,10 +41,12 @@ export default function CollectionSearchForm({ searchPath = '/collection', place
         type="search"
         placeholder={placeholder}
         value={searchTerm}
-        onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+          setSearchTerm(e.target.value)
+        }
         className="flex-grow"
       />
       <Button type="submit">Search</Button>
     </form>
   );
-} 
+}

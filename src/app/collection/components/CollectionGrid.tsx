@@ -1,5 +1,5 @@
-import { DiscogsRelease } from "@/lib/api/discogs";
-import AlbumCard from "./AlbumCard";
+import { DiscogsRelease } from '@/lib/api/discogs';
+import AlbumCard from './AlbumCard';
 
 interface CollectionGridProps {
   releases: DiscogsRelease[];
@@ -7,7 +7,9 @@ interface CollectionGridProps {
 
 export default function CollectionGrid({ releases }: CollectionGridProps) {
   if (!releases || releases.length === 0) {
-    return <p className="text-center text-muted-foreground">No releases found.</p>;
+    return (
+      <p className="text-center text-muted-foreground">No releases found.</p>
+    );
   }
 
   return (
@@ -17,4 +19,4 @@ export default function CollectionGrid({ releases }: CollectionGridProps) {
       ))}
     </div>
   );
-} 
+}

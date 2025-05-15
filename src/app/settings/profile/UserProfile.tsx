@@ -14,7 +14,11 @@ export default function UserProfile() {
   if (!user) {
     // This should ideally not happen if the page is protected
     // Or AuthProvider should redirect to login if no user
-    return <p>No user logged in. Please <a href="/login">login</a>.</p>;
+    return (
+      <p>
+        No user logged in. Please <a href="/login">login</a>.
+      </p>
+    );
   }
 
   const handleSignOut = async () => {
@@ -29,8 +33,10 @@ export default function UserProfile() {
       </p>
       {/* Add more profile information here as needed */}
       <form action={handleSignOut}>
-        <Button type="submit" variant="destructive">Sign Out</Button>
+        <Button type="submit" variant="destructive">
+          Sign Out
+        </Button>
       </form>
     </div>
   );
-} 
+}

@@ -23,9 +23,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
       useFactory: async (configService: ConfigService) => {
         const redisUrl = configService.get<string>('REDIS_URL');
         if (!redisUrl) {
-          console.warn(
-            'REDIS_URL not configured. Caching will use in-memory store.',
-          );
+          console.warn('REDIS_URL not configured. Caching will use in-memory store.');
           return {
             ttl: 5 * 1000, // 5 seconds default TTL for in-memory
           };

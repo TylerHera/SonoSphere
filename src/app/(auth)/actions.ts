@@ -22,7 +22,7 @@ export async function signUp(formData: FormData) {
     // Consider returning a more user-friendly error message or redirecting with an error query param
     return redirect('/signup?error=' + encodeURIComponent(error.message));
   }
-  
+
   // For server-side sign-up, Supabase handles cookies. Redirection might be to a pending verification page or login.
   // If email confirmation is required, user will get an email.
   // If not, they are logged in.
@@ -55,24 +55,30 @@ export async function signInWithSpotify() {
     provider: 'spotify',
     options: {
       redirectTo: `${origin}/auth/callback/spotify`,
-      scopes: 'user-read-email user-read-private streaming user-read-playback-state user-modify-playback-state user-library-read user-library-modify playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private',
+      scopes:
+        'user-read-email user-read-private streaming user-read-playback-state user-modify-playback-state user-library-read user-library-modify playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private',
     },
   });
 
   if (error) {
     console.error('Spotify Sign In Error:', error.message);
-    return redirect('/login?error=' + encodeURIComponent('Could not authenticate with Spotify.'));
+    return redirect(
+      '/login?error=' +
+        encodeURIComponent('Could not authenticate with Spotify.'),
+    );
   }
 
   if (data.url) {
     return redirect(data.url); // Redirect to Spotify authorization page
   }
 
-  return redirect('/login?error=' + encodeURIComponent('An unexpected error occurred.'));
+  return redirect(
+    '/login?error=' + encodeURIComponent('An unexpected error occurred.'),
+  );
 }
 
 export async function signOut() {
   const supabase = createClient();
   await supabase.auth.signOut();
   return redirect('/login');
-} 
+}

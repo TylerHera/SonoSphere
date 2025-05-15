@@ -1,4 +1,13 @@
-import { IsString, IsInt, IsOptional, IsUrl, MinLength, MaxLength, IsEnum, IsArray } from 'class-validator';
+import {
+  IsString,
+  IsInt,
+  IsOptional,
+  IsUrl,
+  MinLength,
+  MaxLength,
+  IsEnum,
+  IsArray,
+} from 'class-validator';
 
 // Enum to match Prisma schema
 export enum CollectionItemStatusDto {

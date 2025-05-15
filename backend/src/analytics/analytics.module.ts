@@ -6,12 +6,8 @@ import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [
-    PrismaModule, 
-    HttpModule,
-    ConfigModule,
-  ],
+  imports: [PrismaModule, HttpModule, ConfigModule],
   controllers: [AnalyticsController],
   providers: [AnalyticsService],
 })
-export class AnalyticsModule {} 
+export class AnalyticsModule {}

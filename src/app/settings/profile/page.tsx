@@ -22,4 +22,4 @@ export default async function ProfilePage() {
       <UserProfile />
     </div>
   );
-} 
+}

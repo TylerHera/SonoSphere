@@ -16,6 +16,9 @@ export async function GET(request: Request) {
   }
 
   // return the user to an error page with instructions
-  console.error('Spotify OAuth Error:', searchParams.get('error_description') || 'No code provided.');
+  console.error(
+    'Spotify OAuth Error:',
+    searchParams.get('error_description') || 'No code provided.',
+  );
   return NextResponse.redirect(`${origin}/auth/auth-code-error`);
-} 
+}
