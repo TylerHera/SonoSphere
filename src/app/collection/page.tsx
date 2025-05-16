@@ -574,7 +574,13 @@ function CollectionClientContent() {
 // New default export for the page
 export default function CollectionPage() {
   return (
-    <Suspense fallback={<div className="container mx-auto p-4 text-center">Loading collection filters and data...</div>}>
+    <Suspense
+      fallback={
+        <div className="container mx-auto p-4 text-center">
+          Loading collection filters and data...
+        </div>
+      }
+    >
       <CollectionClientContent />
     </Suspense>
   );
