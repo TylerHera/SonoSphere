@@ -1,4 +1,4 @@
-declare namespace Musixmatch {
+export declare namespace Musixmatch {
   interface TrackIdentifierParams {
     track_name?: string;
     artist_name?: string;
@@ -77,5 +77,3 @@ declare namespace Musixmatch {
 
   type ApiResponse<T> = T | ErrorResponse;
 }
-
-export {}; // Makes this a module
