@@ -23,6 +23,17 @@ import {
   PlaybackPosition,
 } from '@/lib/utils/localStorage'; // Import localStorage utilities
 
+// Define local types for album artist information if not well-defined in global Spotify namespace
+interface AlbumArtistInfo {
+  name: string;
+  uri: string;
+  url?: string;
+}
+
+interface AlbumWithArtistInfo extends Spotify.Album { // Assuming Spotify.Album is the base type from SDK
+  artists?: AlbumArtistInfo[];
+}
+
 interface SpotifyPlayerState {
   deviceId: string | null;
   isReady: boolean;
@@ -375,9 +386,7 @@ export const SpotifyPlayerProvider: React.FC<SpotifyPlayerProviderProps> = ({
       }
 
       const primaryTrackArtistName = track.artists?.[0]?.name;
-      const trackAlbum = track.album as Spotify.Album & {
-        artists?: Spotify.Artist[];
-      }; // Type assertion
+      const trackAlbum = track.album as AlbumWithArtistInfo; // Use the new interface for casting
       const albumDisplayName = trackAlbum?.name || 'Unknown Album';
 
       if (!primaryTrackArtistName) {
