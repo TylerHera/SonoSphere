@@ -1,7 +1,7 @@
 /// <reference types="spotify-web-playback-sdk" />
 
-import type { AudioFeaturesObject } from 'spotify-api';
-import type { SpotifyApi } from 'spotify-api';
+// import type { AudioFeaturesObject } from 'spotify-api'; // Removed
+// import type { SpotifyApi } from 'spotify-api'; // Removed
 
 export interface SpotifyTrack {
   id: string;
