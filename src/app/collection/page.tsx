@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, Suspense } from 'react';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -61,7 +61,7 @@ interface PaginatedCollectionResponse {
 
 const ITEMS_PER_PAGE = 12; // Adjust as needed, good for a 3 or 4 column grid
 
-export default function CollectionPage() {
+function CollectionClientContent() {
   const { user, session } = useAuth();
   const [collectionItems, setCollectionItems] = useState<VinylItemFromAPI[]>(
     [],
@@ -568,5 +568,14 @@ export default function CollectionPage() {
         </div>
       )}
     </div>
+  );
+}
+
+// New default export for the page
+export default function CollectionPage() {
+  return (
+    <Suspense fallback={<div className="container mx-auto p-4 text-center">Loading collection filters and data...</div>}>
+      <CollectionClientContent />
+    </Suspense>
   );
 }
