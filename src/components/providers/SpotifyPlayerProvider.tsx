@@ -30,7 +30,8 @@ interface AlbumArtistInfo {
   url?: string;
 }
 
-interface AlbumWithArtistInfo extends Spotify.Album { // Assuming Spotify.Album is the base type from SDK
+interface AlbumWithArtistInfo extends Spotify.Album {
+  // Assuming Spotify.Album is the base type from SDK
   artists?: AlbumArtistInfo[];
 }
 
