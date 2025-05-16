@@ -1,3 +1,5 @@
+import { Musixmatch } from '@/types/musixmatch';
+
 const API_BASE_URL = 'https://api.musixmatch.com/ws/1.1/';
 const API_KEY = process.env.NEXT_PUBLIC_MUSIXMATCH_API_KEY;
 
