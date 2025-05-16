@@ -26,17 +26,17 @@ import { Badge } from '@/components/ui/badge';
 
 function SearchResultItem({ item }: { item: UnifiedSearchResult }) {
   const getSourceBadgeVariant = (source: SearchResultSource) => {
-    switch (source) {
+    switch (source.toLowerCase()) {
       case 'spotify':
         return 'default';
-      case 'appleMusic':
+      case 'applemusic':
         return 'destructive';
       case 'discogs':
         return 'secondary';
-      case 'youtube':
+      case 'musicbrainz':
         return 'outline';
       default:
-        return 'info';
+        return 'default';
     }
   };
 
@@ -184,7 +184,7 @@ function UnifiedSearchComponent() {
 
       {searchResults?.errors &&
         Object.keys(searchResults.errors).length > 0 && (
-          <Alert variant="warning" className="mb-6">
+          <Alert variant="default" className="mb-6">
             <AlertTitle>Source Errors</AlertTitle>
             <AlertDescription>
               <ul className="list-disc pl-5">
