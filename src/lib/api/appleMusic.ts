@@ -140,7 +140,7 @@ export async function unauthorizeAppleMusic(): Promise<void> {
  */
 export async function searchAppleMusic(
   term: string,
-  types?: MusicKit.MediaItemType[],
+  types?: string[],
   limit: number = 10,
 ): Promise<any> {
   try {
