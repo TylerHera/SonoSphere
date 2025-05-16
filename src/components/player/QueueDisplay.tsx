@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ListMusic } from 'lucide-react';
 
 export const QueueDisplay: React.FC = () => {
-  const { playerState } = useSpotifyPlayer();
+  const { currentTrack } = useSpotifyPlayer();
   // Accessing playerState directly from a hypothetical, more detailed context if needed
   // For now, let's assume track_window is available from the basic playerState.currentTrack or similar
   // const { track_window } = playerState; // This would be from a more detailed Spotify.PlaybackState
@@ -16,7 +16,6 @@ export const QueueDisplay: React.FC = () => {
   // This often requires separate API calls to get user's queue or upcoming tracks in a playlist/album context.
   // For this placeholder, we will just show next tracks if available in track_window.
 
-  const currentTrack = playerState.currentTrack;
   // const nextTracks = playerState.track_window?.next_tracks || []; // This is illustrative
   // const previousTracks = playerState.track_window?.previous_tracks || [];
 
