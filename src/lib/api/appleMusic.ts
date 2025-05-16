@@ -10,23 +10,31 @@ declare global {
   }
 }
 
-interface MusicKitInstance {
-  player: any;
-  api: any;
-  authorize: () => Promise<any>;
-  unauthorize: () => Promise<any>;
-  setQueue: (options: { items: any[] }) => Promise<any>;
+// Define a new interface for player controls
+interface AppleInternalPlayer {
   play: () => Promise<any>;
   pause: () => Promise<any>;
+  stop: () => Promise<any>;
   skipToNextItem: () => Promise<any>;
   skipToPreviousItem: () => Promise<any>;
   seekToTime: (time: number) => Promise<any>;
-  // Add more methods as needed based on MusicKit.Player documentation
-  readonly isAuthorized: boolean;
   readonly currentPlaybackTime: number;
   readonly currentPlaybackDuration: number;
-  readonly nowPlayingItem: any | null;
-  readonly playbackState: MusicKit.PlaybackStates; // e.g., 'playing', 'paused', 'stopped'
+  readonly nowPlayingItem: MusicKit.MediaItem | null;
+  readonly playbackState: MusicKit.PlaybackStates;
+}
+
+interface MusicKitInstance {
+  player: AppleInternalPlayer; // Player methods are here
+  api: any; // Keep as any for now, or use MusicKit.API
+  authorize: () => Promise<any>;
+  unauthorize: () => Promise<any>;
+  // setQueue is directly on the instance, not the player
+  setQueue: (options: MusicKit.SetQueueOptions) => Promise<MusicKit.Queue>;
+  readonly isAuthorized: boolean; // Directly on the instance
+  // Removed player-specific methods and properties from here:
+  // play, pause, skipToNextItem, skipToPreviousItem, seekToTime
+  // currentPlaybackTime, currentPlaybackDuration, nowPlayingItem, playbackState
 }
 
 let musicKitInstance: MusicKitInstance | null = null;
@@ -196,7 +204,7 @@ export async function playAppleMusicItem(
       }
     }
 
-    const queueOptions: any = {};
+    const queueOptions: MusicKit.SetQueueOptions = {};
     if (kind === 'songs') {
       queueOptions.song = itemId;
     } else if (kind === 'albums') {
@@ -204,13 +212,16 @@ export async function playAppleMusicItem(
     } else if (kind === 'playlists') {
       queueOptions.playlist = itemId;
     } else if (kind === 'stations') {
-      queueOptions.station = itemId; // For radio stations
+      // MusicKit.SetQueueOptions doesn't directly support 'station' like this.
+      // This might need a different approach or API call if 'station' is a custom concept here
+      // For now, casting to any to preserve functionality, but this needs review.
+      (queueOptions as any).station = itemId;
     } else {
       throw new Error(`Unsupported item kind: ${kind}`);
     }
 
     await music.setQueue(queueOptions);
-    await music.play();
+    await music.player.play(); // Changed from music.play()
   } catch (error) {
     console.error('Error playing Apple Music item:', error);
     throw error;
@@ -222,7 +233,7 @@ export async function playAppleMusicItem(
 export async function pauseAppleMusic(): Promise<void> {
   try {
     const music = await configureMusicKit();
-    await music.pause();
+    await music.player.pause(); // Changed from music.pause()
   } catch (e) {
     console.error('AM pause error', e);
   }
@@ -231,7 +242,7 @@ export async function pauseAppleMusic(): Promise<void> {
 export async function stopAppleMusic(): Promise<void> {
   try {
     const music = await configureMusicKit();
-    await music.stop(); // MusicKit.Player.stop()
+    await music.player.stop(); // Changed from music.stop()
   } catch (e) {
     console.error('AM stop error', e);
   }
