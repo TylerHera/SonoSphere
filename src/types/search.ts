@@ -58,5 +58,5 @@ export interface AggregatedSearchResults {
   query: string;
   results: UnifiedSearchResult[];
   // countsBySource?: Record<SearchResultSource, number>; // Optional: for UI display
-  errors?: Record<SearchResultSource, string>; // Uncommented this line
+  errors?: Partial<Record<SearchResultSource, string>>; // Changed to Partial
 }
